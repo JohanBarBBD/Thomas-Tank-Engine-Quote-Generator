@@ -1,5 +1,7 @@
 package com.example.tteapi.repository;
+import com.example.tteapi.model.Favourite;
 
-public class FavouriteRepository {
-    
+import org.springframework.data.repository.CrudRepository;
+
+public interface FavouriteRepository extends CrudRepository<Favourite, Long> {
 }

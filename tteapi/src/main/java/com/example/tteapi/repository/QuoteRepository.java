@@ -1,5 +1,7 @@
 package com.example.tteapi.repository;
+import com.example.tteapi.model.Quote;
 
-public class QuoteRepository {
-    
+import org.springframework.data.repository.CrudRepository;
+
+public interface QuoteRepository extends CrudRepository<Quote, Long> {
 }
