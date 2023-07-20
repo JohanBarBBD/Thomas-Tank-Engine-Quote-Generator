@@ -32,7 +32,7 @@ CREATE TABLE [Quote] (
 );
 GO
 
-CREATE TABLE FavoriteQuote(
+CREATE TABLE [FavoriteQuote] (
 	QuoteID INT NOT NULL,
 	UserID INT NOT NULL,
 	DateFavorited DATE NOT NULL,
