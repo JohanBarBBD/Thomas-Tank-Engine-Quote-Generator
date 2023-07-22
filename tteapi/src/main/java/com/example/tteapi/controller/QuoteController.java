@@ -26,7 +26,7 @@ public class QuoteController {
 			List<Quote> quotes = new ArrayList<Quote>();
 
 			quoteRepository.findAll().forEach(quotes::add);
-			
+
 			return new ResponseEntity<>(quotes, HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -48,7 +48,7 @@ public class QuoteController {
 	public ResponseEntity<Quote> createQuote(@RequestBody Quote quote) {
 		try {
 			Quote _quote = quoteRepository
-					.save(new Quote(quote.getQuoteText(), quote.getQuoteEp(), quote.getQuoteSeason(), quote.getCharacter()));
+					.save(new Quote(quote.getQuoteText(), quote.getQuoteEpisode(), quote.getQuoteSeason(), quote.getCharacter()));
 			return new ResponseEntity<>(_quote, HttpStatus.CREATED);
 		} catch (Exception e) {
 			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -62,7 +62,7 @@ public class QuoteController {
 		if (quoteData.isPresent()) {
 			Quote _quote = quoteData.get();
 			_quote.setQuoteText(quote.getQuoteText());
-			_quote.setQuoteEp(quote.getQuoteEp());
+			_quote.setQuoteEpisode(quote.getQuoteEpisode());
 			_quote.setQuoteSeason(quote.getQuoteSeason());
 			_quote.setCharacter(quote.getCharacter());
 			return new ResponseEntity<>(quoteRepository.save(_quote), HttpStatus.OK);

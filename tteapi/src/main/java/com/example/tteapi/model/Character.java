@@ -3,29 +3,29 @@ package com.example.tteapi.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "Characters")
+@Table(name = "[character]")
 public class Character {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
-  private long id;
+  @Column(name = "character_id")
+  private Integer characterId;
 
-  @Column(name = "name")
-  private String name;
+  @Column(name = "character_name")
+  private String characterName;
 
-  public Character(String name) {
-    this.name = name;
+  public Character(String characterName) {
+    this.characterName = characterName;
   }
 
-  public long getId() {
-    return id;
+  public Integer getId() {
+    return characterId;
   }
 
   public String getName() {
-    return name;
+    return characterName;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  public void setName(String characterName) {
+    this.characterName = characterName;
   }
 }

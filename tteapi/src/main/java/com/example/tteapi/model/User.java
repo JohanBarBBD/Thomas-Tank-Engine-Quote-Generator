@@ -3,50 +3,50 @@ package com.example.tteapi.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "Users")
+@Table(name = "[user]")
 public class User {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
-  private long id;
+  @Column(name = "[user_id]")
+  private Integer UserID;
 
-  @Column(name = "email")
-  private String email;
+  @Column(name = "UserEmail")
+  private String UserEmail;
 
-  @Column(name = "name")
-  private String name;
+  @Column(name = "UserName")
+  private String UserName;
 
   public User() {
 
   }
 
-  public User(String email, String name) {
-    this.email = email;
-    this.name = name;
+  public User(String UserEmail, String UserName) {
+    this.UserEmail = UserEmail;
+    this.UserName = UserName;
   }
 
-  public long getId() {
-    return id;
+  public Integer getId() {
+    return this.UserID;
   }
 
-  public String getEmail() {
-    return email;
+  public String getUserEmail() {
+    return UserEmail;
   }
 
-  public void setEmail(String email) {
-    this.email = email;
+  public void setUserEmail(String UserEmail) {
+    this.UserEmail = UserEmail;
   }
 
-  public String getName() {
-    return name;
+  public String getUserName() {
+    return UserName;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  public void setUserName(String UserName) {
+    this.UserName = UserName;
   }
 
-  @Override
-  public String toString() {
-    return "Tutorial [id=" + id + ", email=" + email + ", name=" + name + "]";
-  }
+  // @Override
+  // public String toString() {
+  //   return "Tutorial [id=" + id + ", UserEmail=" + UserEmail + ", UserName=" + UserName + "]";
+  // }
 }

@@ -3,66 +3,66 @@ package com.example.tteapi.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "Quotes")
+@Table(name = "[quote]")
 public class Quote {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    @Column(name = "quote_id")
+    private Integer QuoteID;
 
-    @Column(name = "quoteText")
-    private String quoteText;
+    @Column(name = "quote_text")
+    private String QuoteText;
 
-    @Column(name = "quoteEp")
-    private Integer quoteEp;
+    @Column(name = "quote_episode")
+    private Integer QuoteEpisode;
 
-    @Column(name = "quoteSeason")
-    private Integer quoteSeason;
+    @Column(name = "quote_season")
+    private Integer QuoteSeason;
 
     @ManyToOne
-    @JoinColumn(name = "CharacterID", insertable = false, updatable = false)
-    private Character character;
+    @JoinColumn(name = "character_id", insertable = false, updatable = false)
+    private Character Character;
 
-    public Quote(String quoteText, Integer quoteEp, Integer quoteSeason, Character character) {
-        this.quoteText = quoteText;
-        this.quoteEp = quoteEp;
-        this.quoteSeason = quoteSeason;
-        this.character = character;
+    public Quote(String QuoteText, Integer QuoteEpisode, Integer QuoteSeason, Character Character) {
+        this.QuoteText = QuoteText;
+        this.QuoteEpisode = QuoteEpisode;
+        this.QuoteSeason = QuoteSeason;
+        this.Character = Character;
     }
 
-    public long getId() {
-        return id;
+    public Integer getId() {
+        return QuoteID;
     }
 
     public String getQuoteText() {
-        return quoteText;
+        return QuoteText;
     }
 
-    public void setQuoteText(String quoteText) {
-        this.quoteText = quoteText;
+    public void setQuoteText(String QuoteText) {
+        this.QuoteText = QuoteText;
     }
 
-    public Integer getQuoteEp() {
-        return quoteEp;
+    public Integer getQuoteEpisode() {
+        return QuoteEpisode;
     }
 
-    public void setQuoteEp(Integer quoteEp) {
-        this.quoteEp = quoteEp;
+    public void setQuoteEpisode(Integer QuoteEpisode) {
+        this.QuoteEpisode = QuoteEpisode;
     }
 
     public Integer getQuoteSeason() {
-        return quoteSeason;
+        return QuoteSeason;
     }
 
-    public void setQuoteSeason(Integer quoteSeason) {
-        this.quoteSeason = quoteSeason;
+    public void setQuoteSeason(Integer QuoteSeason) {
+        this.QuoteSeason = QuoteSeason;
     }
 
     public Character getCharacter() {
-        return character;
+        return Character;
     }
 
-    public void setCharacter(Character character) {
-        this.character = character;
+    public void setCharacter(Character Character) {
+        this.Character = Character;
     }
 }

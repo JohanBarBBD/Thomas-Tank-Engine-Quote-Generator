@@ -26,7 +26,7 @@ public class CharacterController {
 			List<Character> characters = new ArrayList<Character>();
 
 			characterRepository.findAll().forEach(characters::add);
-			
+
 			return new ResponseEntity<>(characters, HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);

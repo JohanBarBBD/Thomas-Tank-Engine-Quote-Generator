@@ -26,7 +26,7 @@ public class UserController {
 			List<User> users = new ArrayList<User>();
 
 			userRepository.findAll().forEach(users::add);
-			
+
 			return new ResponseEntity<>(users, HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -48,7 +48,7 @@ public class UserController {
 	public ResponseEntity<User> createUser(@RequestBody User user) {
 		try {
 			User _user = userRepository
-					.save(new User(user.getEmail(), user.getName()));
+					.save(new User(user.getUserEmail(), user.getUserName()));
 			return new ResponseEntity<>(_user, HttpStatus.CREATED);
 		} catch (Exception e) {
 			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -61,8 +61,8 @@ public class UserController {
 
 		if (userData.isPresent()) {
 			User _user = userData.get();
-			_user.setEmail(user.getEmail());
-			_user.setName(user.getName());
+			_user.setUserEmail(user.getUserEmail());
+			_user.setUserName(user.getUserName());
 			return new ResponseEntity<>(userRepository.save(_user), HttpStatus.OK);
 		} else {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
