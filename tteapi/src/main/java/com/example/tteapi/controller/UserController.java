@@ -44,6 +44,17 @@ public class UserController {
 		}
 	}
 
+	@GetMapping("/users/by-email")
+	public ResponseEntity<User> getUserByEmail(@RequestParam("email") String email) {
+		Optional<User> userData = userRepository.findByEmail(email);
+
+		if (userData.isPresent()) {
+			return new ResponseEntity<>(userData.get(), HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+	}
+
 	@PostMapping("/users")
 	public ResponseEntity<User> createUser(@RequestBody User user) {
 		try {
