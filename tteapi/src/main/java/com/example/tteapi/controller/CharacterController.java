@@ -55,16 +55,17 @@ public class CharacterController {
 		}
 	}
 
-	@PutMapping("/characters/{id}")
-	public ResponseEntity<Character> updateCharacter(@PathVariable("id") long id, @RequestBody Character character) {
-		Optional<Character> characterData = characterRepository.findById(id);
-
-		if (characterData.isPresent()) {
-			Character _character = characterData.get();
-			_character.setName(character.getName());
-			return new ResponseEntity<>(characterRepository.save(_character), HttpStatus.OK);
-		} else {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	@PostMapping("/characters/batch-create")
+	public ResponseEntity<List<Character>> createCharacters(@RequestBody List<Character> characters) {
+		try {
+			List<Character> savedCharacters = new ArrayList<>();
+			for (Character character : characters) {
+				Character _character = characterRepository.save(new Character(character.getName()));
+				savedCharacters.add(_character);
+			}
+			return new ResponseEntity<>(savedCharacters, HttpStatus.CREATED);
+		} catch (Exception e) {
+			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
@@ -76,16 +77,5 @@ public class CharacterController {
 		} catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-	}
-
-	@DeleteMapping("/characters")
-	public ResponseEntity<HttpStatus> deleteAllCharacters() {
-		try {
-			characterRepository.deleteAll();
-			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-		} catch (Exception e) {
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-
 	}
 }

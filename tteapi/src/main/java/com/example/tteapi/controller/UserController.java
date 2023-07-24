@@ -55,20 +55,6 @@ public class UserController {
 		}
 	}
 
-	@PutMapping("/users/{id}")
-	public ResponseEntity<User> updateUser(@PathVariable("id") long id, @RequestBody User user) {
-		Optional<User> userData = userRepository.findById(id);
-
-		if (userData.isPresent()) {
-			User _user = userData.get();
-			_user.setEmail(user.getEmail());
-			_user.setName(user.getName());
-			return new ResponseEntity<>(userRepository.save(_user), HttpStatus.OK);
-		} else {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-	}
-
 	@DeleteMapping("/users/{id}")
 	public ResponseEntity<HttpStatus> deleteUser(@PathVariable("id") long id) {
 		try {
@@ -77,16 +63,5 @@ public class UserController {
 		} catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-	}
-
-	@DeleteMapping("/users")
-	public ResponseEntity<HttpStatus> deleteAllUsers() {
-		try {
-			userRepository.deleteAll();
-			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-		} catch (Exception e) {
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-
 	}
 }

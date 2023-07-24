@@ -11,20 +11,20 @@ public class Favourite {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @ManyToOne
-    @JoinColumn(name = "QuoteID", insertable = false, updatable = false)
-    private Quote quote;
+    @Column(name = "QuoteID")
+    private long quoteID;
 
-    @ManyToOne
-    @JoinColumn(name = "UserID", insertable = false, updatable = false)
-    private User user;
+    @Column(name = "UserID")
+    private long userID;
 
     @Column(name = "dateFavourited")
     private Date dateFavourited;
 
-    public Favourite(Quote quote, User user, Date dateFavourited) {
-        this.quote = quote;
-        this.user = user;
+    public Favourite() {}
+
+    public Favourite(long quoteID, long userID, Date dateFavourited) {
+        this.quoteID = quoteID;
+        this.userID = userID;
         this.dateFavourited = dateFavourited;
     }
 
@@ -32,20 +32,20 @@ public class Favourite {
         return id;
     }
 
-    public Quote getQuote() {
-        return quote;
+    public long getQuoteID() {
+        return quoteID;
     }
 
-    public void setQuote(Quote quote) {
-        this.quote = quote;
+    public void setQuoteID(long quoteID) {
+        this.quoteID = quoteID;
     }
 
-    public User getUser() {
-        return user;
+    public long getUserID() {
+        return userID;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUserID(long userID) {
+        this.userID = userID;
     }
 
     public Date getDateFavourited() {

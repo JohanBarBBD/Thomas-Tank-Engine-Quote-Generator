@@ -19,15 +19,16 @@ public class Quote {
     @Column(name = "quoteSeason")
     private Integer quoteSeason;
 
-    @ManyToOne
-    @JoinColumn(name = "CharacterID", insertable = false, updatable = false)
-    private Character character;
+    @Column(name = "CharacterID")
+    private Long characterID;
 
-    public Quote(String quoteText, Integer quoteEp, Integer quoteSeason, Character character) {
+    public Quote() {}  
+
+    public Quote(String quoteText, Integer quoteEp, Integer quoteSeason, long characterID) {
         this.quoteText = quoteText;
         this.quoteEp = quoteEp;
         this.quoteSeason = quoteSeason;
-        this.character = character;
+        this.characterID = characterID;
     }
 
     public long getId() {
@@ -58,11 +59,11 @@ public class Quote {
         this.quoteSeason = quoteSeason;
     }
 
-    public Character getCharacter() {
-        return character;
+    public long getCharacterID() {
+        return characterID;
     }
 
-    public void setCharacter(Character character) {
-        this.character = character;
+    public void setCharacterID(long characterID) {
+        this.characterID = characterID;
     }
 }

@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.tteapi.model.Quote;
+import com.example.tteapi.model.Character;
+import com.example.tteapi.repository.CharacterRepository;
 import com.example.tteapi.repository.QuoteRepository;
 
 @CrossOrigin(origins = "http://localhost:8081")
@@ -20,13 +22,16 @@ public class QuoteController {
 	@Autowired
 	QuoteRepository quoteRepository;
 
+	@Autowired
+	CharacterRepository characterRepository;
+
 	@GetMapping("/quotes")
 	public ResponseEntity<List<Quote>> getAllQuotes() {
 		try {
 			List<Quote> quotes = new ArrayList<Quote>();
 
 			quoteRepository.findAll().forEach(quotes::add);
-			
+
 			return new ResponseEntity<>(quotes, HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -47,27 +52,42 @@ public class QuoteController {
 	@PostMapping("/quotes")
 	public ResponseEntity<Quote> createQuote(@RequestBody Quote quote) {
 		try {
+			Long characterId = quote.getCharacterID();
+
+			Character character = characterRepository.findById(characterId).orElse(null);
+			if (character == null) {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+
 			Quote _quote = quoteRepository
-					.save(new Quote(quote.getQuoteText(), quote.getQuoteEp(), quote.getQuoteSeason(), quote.getCharacter()));
+					.save(new Quote(quote.getQuoteText(), quote.getQuoteEp(), quote.getQuoteSeason(),
+							character.getId()));
+
 			return new ResponseEntity<>(_quote, HttpStatus.CREATED);
 		} catch (Exception e) {
 			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
-	@PutMapping("/quotes/{id}")
-	public ResponseEntity<Quote> updateQuote(@PathVariable("id") long id, @RequestBody Quote quote) {
-		Optional<Quote> quoteData = quoteRepository.findById(id);
+	@PostMapping("/quotes/batch-create")
+	public ResponseEntity<List<Quote>> createQuotes(@RequestBody List<Quote> quotes) {
+		try {
+			List<Quote> savedQuotes = new ArrayList<>();
+			for (Quote quote : quotes) {
+				Long characterId = quote.getCharacterID();
 
-		if (quoteData.isPresent()) {
-			Quote _quote = quoteData.get();
-			_quote.setQuoteText(quote.getQuoteText());
-			_quote.setQuoteEp(quote.getQuoteEp());
-			_quote.setQuoteSeason(quote.getQuoteSeason());
-			_quote.setCharacter(quote.getCharacter());
-			return new ResponseEntity<>(quoteRepository.save(_quote), HttpStatus.OK);
-		} else {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+				Character character = characterRepository.findById(characterId).orElse(null);
+				if (character == null) {
+					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				}
+
+				Quote _quote = quoteRepository.save(new Quote(quote.getQuoteText(), quote.getQuoteEp(),
+						quote.getQuoteSeason(), character.getId()));
+				savedQuotes.add(_quote);
+			}
+			return new ResponseEntity<>(savedQuotes, HttpStatus.CREATED);
+		} catch (Exception e) {
+			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 

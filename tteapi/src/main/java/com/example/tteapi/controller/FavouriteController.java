@@ -11,7 +11,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.tteapi.model.Favourite;
+import com.example.tteapi.model.Quote;
+import com.example.tteapi.model.User;
 import com.example.tteapi.repository.FavouriteRepository;
+import com.example.tteapi.repository.QuoteRepository;
+import com.example.tteapi.repository.UserRepository;
 
 @CrossOrigin(origins = "http://localhost:8081")
 @RestController
@@ -20,6 +24,8 @@ public class FavouriteController {
 
     @Autowired
     FavouriteRepository favouriteRepository;
+    QuoteRepository quoteRepository;
+    UserRepository userRepository;
 
     @GetMapping("/favourites")
     public ResponseEntity<List<Favourite>> getAllFavourites() {
@@ -38,25 +44,20 @@ public class FavouriteController {
     public ResponseEntity<Favourite> createFavourite(@RequestBody Favourite favourite) {
         try {
             Date now = new Date();
-            Favourite _favourite = favouriteRepository
-                    .save(new Favourite(favourite.getQuote(), favourite.getUser(), now));
+            long quoteID = favourite.getQuoteID();
+            long userID = favourite.getUserID();
+
+            Quote quote = quoteRepository.findById(quoteID).orElse(null);
+            User user = userRepository.findById(userID).orElse(null);
+
+            if (quote == null || user == null) {
+                return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            }
+
+            Favourite _favourite = favouriteRepository.save(new Favourite(quote.getId(), user.getId(), now));
             return new ResponseEntity<>(_favourite, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @PutMapping("/favourites/{id}")
-    public ResponseEntity<Favourite> updateFavourite(@PathVariable("id") long id, @RequestBody Favourite favourite) {
-        Optional<Favourite> favouriteData = favouriteRepository.findById(id);
-
-        if (favouriteData.isPresent()) {
-            Favourite _favourite = favouriteData.get();
-            _favourite.setQuote(favourite.getQuote());
-            _favourite.setUser(favourite.getUser());
-            return new ResponseEntity<>(favouriteRepository.save(_favourite), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
@@ -68,16 +69,5 @@ public class FavouriteController {
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-    }
-
-    @DeleteMapping("/favourites")
-    public ResponseEntity<HttpStatus> deleteAllFavourites() {
-        try {
-            favouriteRepository.deleteAll();
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
     }
 }

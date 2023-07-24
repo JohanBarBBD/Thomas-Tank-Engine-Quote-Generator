@@ -13,6 +13,8 @@ public class Character {
   @Column(name = "name")
   private String name;
 
+  public Character() {}
+
   public Character(String name) {
     this.name = name;
   }
