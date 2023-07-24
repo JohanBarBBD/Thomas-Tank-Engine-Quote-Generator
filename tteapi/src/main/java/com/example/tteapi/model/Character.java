@@ -3,11 +3,12 @@ package com.example.tteapi.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "Characters")
+@Table(name = "characters")
 public class Character {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+
   private long id;
 
   @Column(name = "name")
