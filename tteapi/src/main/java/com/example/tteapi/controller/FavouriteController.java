@@ -40,22 +40,25 @@ public class FavouriteController {
         }
     }
 
+    @GetMapping("/favourites/{userId}")
+    public ResponseEntity<List<Favourite>> getUserFavourites(@PathVariable("userId") long userId) {
+        try {
+            List<Favourite> userFavourites = favouriteRepository.findByUserID(userId);
+
+            return new ResponseEntity<>(userFavourites, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @PostMapping("/favourites")
     public ResponseEntity<Favourite> createFavourite(@RequestBody Favourite favourite) {
         try {
-            Date now = new Date();
-            long quoteID = favourite.getQuoteID();
-            long userID = favourite.getUserID();
+            favourite.setDateFavourited(new Date());
 
-            Quote quote = quoteRepository.findById(quoteID).orElse(null);
-            User user = userRepository.findById(userID).orElse(null);
+            Favourite createdFavourite = favouriteRepository.save(favourite);
 
-            if (quote == null || user == null) {
-                return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-            }
-
-            Favourite _favourite = favouriteRepository.save(new Favourite(quote.getId(), user.getId(), now));
-            return new ResponseEntity<>(_favourite, HttpStatus.CREATED);
+            return new ResponseEntity<>(createdFavourite, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }

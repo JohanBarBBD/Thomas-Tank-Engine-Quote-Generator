@@ -1,8 +1,12 @@
 package com.example.tteapi.controller;
 
+import java.time.LocalDate;
+import java.time.temporal.WeekFields;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -47,6 +51,42 @@ public class QuoteController {
 		} else {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
+	}
+
+	@GetMapping("/quotes/quote-of-the-day")
+	public ResponseEntity<Quote> getQuoteOfTheDay() {
+		int dayOfYear = LocalDate.now().getDayOfYear();
+
+		Iterable<Quote> allQuotesIterable = quoteRepository.findAll();
+		List<Quote> allQuotes = StreamSupport.stream(allQuotesIterable.spliterator(), false)
+				.collect(Collectors.toList());
+
+		if (allQuotes.isEmpty()) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+
+		int index = dayOfYear % allQuotes.size();
+		Quote randomQuote = allQuotes.get(index);
+
+		return new ResponseEntity<>(randomQuote, HttpStatus.OK);
+	}
+
+	@GetMapping("/quotes/quote-of-the-week")
+	public ResponseEntity<Quote> getRandomQuoteByWeek() {
+		int weekOfYear = LocalDate.now().get(WeekFields.ISO.weekOfYear());
+
+		Iterable<Quote> allQuotesIterable = quoteRepository.findAll();
+		List<Quote> allQuotes = StreamSupport.stream(allQuotesIterable.spliterator(), false)
+				.collect(Collectors.toList());
+
+		if (allQuotes.isEmpty()) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+
+		int index = weekOfYear % allQuotes.size();
+		Quote randomQuote = allQuotes.get(index);
+
+		return new ResponseEntity<>(randomQuote, HttpStatus.OK);
 	}
 
 	@PostMapping("/quotes")
