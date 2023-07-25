@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>TTE Home</title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="../assets/apple-touch-icon.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="../assets/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="../assets/favicon-16x16.png"
+    />
+    <link rel="manifest" href="../assets/site.webmanifest" />
+    <link rel="stylesheet" href="../styles/quotes.css" />
+  </head>
+  <body>
+    <header>
+      <h1 class="headline">Thomas Tank Engine Quote Generator</h1>
+      <nav>
+        <ul>
+          <li><a href="../pages/landing.html">Home</a></li>
+          <li><a href="about.html">Search</a></li>
+          <li><a href="about.html">Quotes</a></li>
+          <li><a href="contact.html">Logout</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main>
+      <div class="container">
+        <section class="quote-container">
+          <p class="quote-heading">Quote of the Day</p>
+          <p class="quote-text">
+            "The best way to predict the future is to create it."
+          </p>
+          <p class="quote-author">- Peter Drucker</p>
+        </section>
+        <section class="quote-container">
+          <p class="quote-heading">Quote of the Week</p>
+          <p class="quote-text">
+            "The best way to predict the future is to create it."
+          </p>
+          <p class="quote-author">- Peter Drucker</p>
+        </section>
+        <section class="quote-container">
+          <p class="quote-heading">Quote of the Month</p>
+          <p class="quote-text">
+            "The best way to predict the future is to create it."
+          </p>
+          <p class="quote-author">- Peter Drucker</p>
+        </section>
+      </div>
+    </main>
+    <script>
+      fetch('header.html')
+        .then((response) => response.text())
+        .then((content) => {
+          const headerDiv = document.getElementById('header');
+          headerDiv.innerHTML = content;
+        })
+        .catch((error) => console.log('Error loading header:', error));
+    </script>
+  </body>
+</html>
