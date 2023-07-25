@@ -1,5 +1,7 @@
 package com.example.tteapi.controller;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -14,8 +16,20 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import javax.imageio.ImageIO;
+
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -239,5 +253,49 @@ public class QuoteController {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
+	}
+
+	private void writeTextToImage(Graphics2D img, String text){
+
+	}
+
+	@GetMapping("/quote/image")
+	public ResponseEntity<byte[]> genQuoteImage(){
+
+		
+		Iterable<Quote> allQuotesIterable = quoteRepository.findAll();
+		List<Quote> allQuotes = StreamSupport.stream(allQuotesIterable.spliterator(), false).collect(Collectors.toList());
+
+		Quote randQuote = allQuotes.get((int)Math.floor(allQuotes.size()*Math.random()));
+
+		int width = 600;
+		int height = 600;
+
+		BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+
+		Graphics2D g2d = bufferedImage.createGraphics();
+
+		g2d.setPaint(Color.CYAN);
+		g2d.fillRect(0, 0, width, height);
+
+		// g2d.setColor(Color.decode());
+		g2d.setFont(new Font("Roboto", Font.PLAIN, 60)); 
+		g2d.drawString(randQuote.getQuoteText(), 50, 120);
+
+		g2d.dispose();
+
+		final HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.IMAGE_PNG);
+		
+		try {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ImageIO.write(bufferedImage, "png", baos);
+			byte[] bytes = baos.toByteArray();	
+			return new ResponseEntity<byte[]>(bytes, headers, HttpStatus.CREATED);
+		} catch (Exception e) {
+			System.out.println("Something went wrong generating the quote");
+		}
+
+		return new ResponseEntity<byte[]>(new byte[0], headers, HttpStatus.CREATED);
 	}
 }
