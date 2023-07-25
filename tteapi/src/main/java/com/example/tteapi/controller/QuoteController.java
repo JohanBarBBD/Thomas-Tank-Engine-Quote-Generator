@@ -1,9 +1,15 @@
 package com.example.tteapi.controller;
 
+import java.time.DayOfWeek;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -15,7 +21,9 @@ import org.springframework.web.bind.annotation.*;
 
 import com.example.tteapi.model.Quote;
 import com.example.tteapi.model.Character;
+import com.example.tteapi.model.Favourite;
 import com.example.tteapi.repository.CharacterRepository;
+import com.example.tteapi.repository.FavouriteRepository;
 import com.example.tteapi.repository.QuoteRepository;
 
 @CrossOrigin(origins = "http://localhost:8081")
@@ -28,6 +36,9 @@ public class QuoteController {
 
 	@Autowired
 	CharacterRepository characterRepository;
+
+	@Autowired
+	FavouriteRepository favouriteRepository;
 
 	@GetMapping("/quotes")
 	public ResponseEntity<List<Quote>> getAllQuotes() {
@@ -72,21 +83,99 @@ public class QuoteController {
 	}
 
 	@GetMapping("/quotes/quote-of-the-week")
-	public ResponseEntity<Quote> getRandomQuoteByWeek() {
-		int weekOfYear = LocalDate.now().get(WeekFields.ISO.weekOfYear());
+	public ResponseEntity<Quote> getQuoteOfTheWeek() {
+		try {
+			Instant currentInstant = Instant.now();
+			ZoneId zoneId = ZoneId.systemDefault();
+			LocalDate currentDate = currentInstant.atZone(zoneId).toLocalDate();
 
-		Iterable<Quote> allQuotesIterable = quoteRepository.findAll();
-		List<Quote> allQuotes = StreamSupport.stream(allQuotesIterable.spliterator(), false)
-				.collect(Collectors.toList());
+			LocalDate firstDayOfWeek = currentDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+			LocalDate lastDayOfWeek = currentDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
 
-		if (allQuotes.isEmpty()) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			Iterable<Favourite> allFavorites = favouriteRepository.findAll();
+			List<Favourite> favoritesInCurrentWeek = StreamSupport.stream(allFavorites.spliterator(), false)
+					.filter(fav -> {
+						LocalDate dateFavourited = fav.getDateFavourited().toInstant().atZone(zoneId).toLocalDate();
+						return dateFavourited.isAfter(firstDayOfWeek.minusDays(1))
+								&& dateFavourited.isBefore(lastDayOfWeek.plusDays(1));
+					})
+					.collect(Collectors.toList());
+
+			Map<Long, Integer> quoteToFavouritesCount = new HashMap<>();
+
+			for (Favourite favourite : favoritesInCurrentWeek) {
+				long quoteId = favourite.getQuoteID();
+				quoteToFavouritesCount.put(quoteId, quoteToFavouritesCount.getOrDefault(quoteId, 0) + 1);
+			}
+
+			Quote quoteOfTheWeek = null;
+			int maxFavoritesCount = 0;
+
+			for (Map.Entry<Long, Integer> entry : quoteToFavouritesCount.entrySet()) {
+				long quoteId = entry.getKey();
+				int favouritesCount = entry.getValue();
+
+				if (favouritesCount > maxFavoritesCount) {
+					maxFavoritesCount = favouritesCount;
+					quoteOfTheWeek = quoteRepository.findById(quoteId).orElse(null);
+				}
+			}
+
+			if (quoteOfTheWeek == null) {
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			}
+
+			return new ResponseEntity<>(quoteOfTheWeek, HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+	}
 
-		int index = weekOfYear % allQuotes.size();
-		Quote randomQuote = allQuotes.get(index);
+	@GetMapping("/quotes/quote-of-the-month")
+	public ResponseEntity<Quote> getQuoteOfTheMonth() {
+		try {
+			LocalDate currentDate = LocalDate.now();
+			LocalDate firstDayOfMonth = currentDate.withDayOfMonth(1);
+			LocalDate lastDayOfMonth = currentDate.withDayOfMonth(currentDate.lengthOfMonth());
 
-		return new ResponseEntity<>(randomQuote, HttpStatus.OK);
+			Iterable<Favourite> allFavorites = favouriteRepository.findAll();
+			List<Favourite> favoritesInCurrentMonth = StreamSupport.stream(allFavorites.spliterator(), false)
+					.filter(fav -> {
+						LocalDate dateFavourited = fav.getDateFavourited().toInstant().atZone(ZoneId.systemDefault())
+								.toLocalDate();
+						return dateFavourited.isAfter(firstDayOfMonth.minusDays(1))
+								&& dateFavourited.isBefore(lastDayOfMonth.plusDays(1));
+					})
+					.collect(Collectors.toList());
+
+			Map<Long, Integer> quoteToFavouritesCount = new HashMap<>();
+
+			for (Favourite favourite : favoritesInCurrentMonth) {
+				long quoteId = favourite.getQuoteID();
+				quoteToFavouritesCount.put(quoteId, quoteToFavouritesCount.getOrDefault(quoteId, 0) + 1);
+			}
+
+			Quote quoteOfTheMonth = null;
+			int maxFavoritesCount = 0;
+
+			for (Map.Entry<Long, Integer> entry : quoteToFavouritesCount.entrySet()) {
+				long quoteId = entry.getKey();
+				int favouritesCount = entry.getValue();
+
+				if (favouritesCount > maxFavoritesCount) {
+					maxFavoritesCount = favouritesCount;
+					quoteOfTheMonth = quoteRepository.findById(quoteId).orElse(null);
+				}
+			}
+
+			if (quoteOfTheMonth == null) {
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			}
+
+			return new ResponseEntity<>(quoteOfTheMonth, HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	@PostMapping("/quotes")
