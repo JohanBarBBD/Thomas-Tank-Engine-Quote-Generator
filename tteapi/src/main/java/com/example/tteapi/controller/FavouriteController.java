@@ -52,15 +52,27 @@ public class FavouriteController {
     }
 
     @PostMapping("/favourites")
-    public ResponseEntity<Favourite> createFavourite(@RequestBody Favourite favourite) {
+    public ResponseEntity<?> createFavourite(@RequestBody Favourite favourite) {
         try {
+            long quoteId = favourite.getQuoteID();
+            long userId = favourite.getUserID();
+
+            List<Favourite> existingFavorites = favouriteRepository.findByUserID(userId);
+
+            boolean isDuplicateFavorite = existingFavorites.stream()
+                    .anyMatch(fav -> fav.getQuoteID() == quoteId);
+
+            if (isDuplicateFavorite) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("User has already favourited this quote.");
+            }
+
             favourite.setDateFavourited(new Date());
 
             Favourite createdFavourite = favouriteRepository.save(favourite);
 
-            return new ResponseEntity<>(createdFavourite, HttpStatus.CREATED);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdFavourite);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 
