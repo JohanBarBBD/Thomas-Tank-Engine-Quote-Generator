@@ -42,9 +42,7 @@
       <div class="container">
         <section class="quote-container">
           <p class="quote-heading">Quote of the Day</p>
-          <p class="quote-text">
-            "The best way to predict the future is to create it."
-          </p>
+          <p id="quoteOfTheDayText" class="quote-text"></p>
           <p class="quote-author">- Peter Drucker</p>
           <section class="buttons">
             <button class="button">Generate New Quote</button>
@@ -75,14 +73,9 @@
         </section>
       </div>
     </main>
-    <script>
-      fetch('header.html')
-        .then((response) => response.text())
-        .then((content) => {
-          const headerDiv = document.getElementById('header');
-          headerDiv.innerHTML = content;
-        })
-        .catch((error) => console.log('Error loading header:', error));
-    </script>
+    <footer>
+      <p>&#128646; Developed By Train Yard Inc.</p>
+    </footer>
+    <script src="../scripts/quotes.js"></script>
   </body>
 </html>
