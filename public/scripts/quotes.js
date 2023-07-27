@@ -76,7 +76,7 @@ function getCharacter(id, author) {
 }
 
 function favoriteQuoteOfTheDay() {
-  const data = { UserID: userId, QuoteID: quoteOfTheDay.QuoteID };
+  const data = { userID: userId, quoteID: quoteOfTheDay.quoteId, "dateFavourited": "2023-07-27T19:52:05.605Z" };
   const url =
     'https://tteapi-4-env.eba-7w3sxei8.af-south-1.elasticbeanstalk.com/api/favourites';
   fetch(url + '?' + queryParams, {
@@ -87,13 +87,16 @@ function favoriteQuoteOfTheDay() {
     body: JSON.stringify(data),
   }).then((response) => {
     if (!response.ok) {
+      document.getElementById("dayQuote").style.backgroundColor = "#550000"
+
       throw new Error('Network response was not ok');
     }
+    document.getElementById("dayQuote").style.backgroundColor = "#FFD700"
   });
 }
 
 function favoriteQuoteOfTheWeek() {
-  const data = { UserID: userId, QuoteID: quoteOfTheWeek.QuoteID };
+  const data = { userID: userId, quoteID: quoteOfTheWeek.quoteId, "dateFavourited": "2023-07-27T19:52:05.605Z" };
   const url =
     'https://tteapi-4-env.eba-7w3sxei8.af-south-1.elasticbeanstalk.com/api/favourites';
   fetch(url + '?' + queryParams, {
@@ -104,13 +107,16 @@ function favoriteQuoteOfTheWeek() {
     body: JSON.stringify(data),
   }).then((response) => {
     if (!response.ok) {
+      document.getElementById("weekQuote").style.backgroundColor = "#550000"
+
       throw new Error('Network response was not ok');
     }
+    document.getElementById("weekQuote").style.backgroundColor = "#FFD700"
   });
 }
 
 function favoriteQuoteOfTheMonth() {
-  const data = { UserID: userId, QuoteID: quoteOfTheMonth.QuoteID };
+  const data = { userID: userId, quoteID: quoteOfTheMonth.quoteId, "dateFavourited": "2023-07-27T19:52:05.605Z" };
   const url =
     'https://tteapi-4-env.eba-7w3sxei8.af-south-1.elasticbeanstalk.com/api/favourites';
   fetch(url + '?' + queryParams, {
@@ -121,8 +127,11 @@ function favoriteQuoteOfTheMonth() {
     body: JSON.stringify(data),
   }).then((response) => {
     if (!response.ok) {
+      document.getElementById("monthQuote").style.backgroundColor = "#550000"
+
       throw new Error('Network response was not ok');
     }
+    document.getElementById("monthQuote").style.backgroundColor ="#FFD700"
   });
 }
 
