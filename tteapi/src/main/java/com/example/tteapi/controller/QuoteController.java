@@ -1,5 +1,8 @@
 package com.example.tteapi.controller;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.time.DayOfWeek;
 import java.time.Instant;
@@ -7,7 +10,6 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,12 +19,6 @@ import java.util.stream.StreamSupport;
 
 import javax.imageio.ImageIO;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.image.BufferedImage;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -31,16 +27,20 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.tteapi.model.Quote;
+import com.example.tteapi.jwt.JWTValidation;
 import com.example.tteapi.model.Character;
 import com.example.tteapi.model.Favourite;
 import com.example.tteapi.repository.CharacterRepository;
 import com.example.tteapi.repository.FavouriteRepository;
 import com.example.tteapi.repository.QuoteRepository;
+import com.example.tteapi.utils.ImageUtils;
 
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api")
 public class QuoteController {
+
+	JWTValidation jwtValidation = new JWTValidation();
 
 	@Autowired
 	QuoteRepository quoteRepository;
@@ -52,7 +52,12 @@ public class QuoteController {
 	FavouriteRepository favouriteRepository;
 
 	@GetMapping("/quotes")
-	public ResponseEntity<List<Quote>> getAllQuotes() {
+	public ResponseEntity<List<Quote>> getAllQuotes(@RequestParam("jwt") String jwt) {
+		boolean isValidToken = jwtValidation.validateToken(jwt);
+		if (!isValidToken) {
+			return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+		}
+
 		try {
 			List<Quote> quotes = new ArrayList<Quote>();
 
@@ -65,7 +70,12 @@ public class QuoteController {
 	}
 
 	@GetMapping("/quotes/{id}")
-	public ResponseEntity<Quote> getQuoteById(@PathVariable("id") long id) {
+	public ResponseEntity<Quote> getQuoteById(@PathVariable("id") long id, @RequestParam("jwt") String jwt) {
+		boolean isValidToken = jwtValidation.validateToken(jwt);
+		if (!isValidToken) {
+			return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+		}
+
 		Optional<Quote> tutorialData = quoteRepository.findById(id);
 
 		if (tutorialData.isPresent()) {
@@ -76,7 +86,12 @@ public class QuoteController {
 	}
 
 	@GetMapping("/quotes/quote-of-the-day")
-	public ResponseEntity<Quote> getQuoteOfTheDay() {
+	public ResponseEntity<Quote> getQuoteOfTheDay(@RequestParam("jwt") String jwt) {
+		boolean isValidToken = jwtValidation.validateToken(jwt);
+		if (!isValidToken) {
+			return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+		}
+
 		int dayOfYear = LocalDate.now().getDayOfYear();
 
 		Iterable<Quote> allQuotesIterable = quoteRepository.findAll();
@@ -94,7 +109,12 @@ public class QuoteController {
 	}
 
 	@GetMapping("/quotes/quote-of-the-week")
-	public ResponseEntity<Quote> getQuoteOfTheWeek() {
+	public ResponseEntity<Quote> getQuoteOfTheWeek(@RequestParam("jwt") String jwt) {
+		boolean isValidToken = jwtValidation.validateToken(jwt);
+		if (!isValidToken) {
+			return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+		}
+
 		try {
 			Instant currentInstant = Instant.now();
 			ZoneId zoneId = ZoneId.systemDefault();
@@ -143,7 +163,12 @@ public class QuoteController {
 	}
 
 	@GetMapping("/quotes/quote-of-the-month")
-	public ResponseEntity<Quote> getQuoteOfTheMonth() {
+	public ResponseEntity<Quote> getQuoteOfTheMonth(@RequestParam("jwt") String jwt) {
+		boolean isValidToken = jwtValidation.validateToken(jwt);
+		if (!isValidToken) {
+			return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+		}
+
 		try {
 			LocalDate currentDate = LocalDate.now();
 			LocalDate firstDayOfMonth = currentDate.withDayOfMonth(1);
@@ -190,7 +215,7 @@ public class QuoteController {
 	}
 
 	@PostMapping("/quotes")
-	public ResponseEntity<Quote> createQuote(@RequestBody Quote quote) {
+	public ResponseEntity<Quote> createQuote(@RequestBody Quote quote, @RequestParam("jwt") String jwt) {
 		try {
 			Long characterId = quote.getCharacterID();
 
@@ -210,7 +235,7 @@ public class QuoteController {
 	}
 
 	@PostMapping("/quotes/batch-create")
-	public ResponseEntity<List<Quote>> createQuotes(@RequestBody List<Quote> quotes) {
+	public ResponseEntity<List<Quote>> createQuotes(@RequestBody List<Quote> quotes, @RequestParam("jwt") String jwt) {
 		try {
 			List<Quote> savedQuotes = new ArrayList<>();
 			for (Quote quote : quotes) {
@@ -232,7 +257,7 @@ public class QuoteController {
 	}
 
 	@DeleteMapping("/quotes/{id}")
-	public ResponseEntity<HttpStatus> deleteQuote(@PathVariable("id") long id) {
+	public ResponseEntity<HttpStatus> deleteQuote(@PathVariable("id") long id, @RequestParam("jwt") String jwt) {
 		try {
 			quoteRepository.deleteById(id);
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -242,7 +267,7 @@ public class QuoteController {
 	}
 
 	@DeleteMapping("/quotes")
-	public ResponseEntity<HttpStatus> deleteAllQuotes() {
+	public ResponseEntity<HttpStatus> deleteAllQuotes(@RequestParam("jwt") String jwt) {
 		try {
 			quoteRepository.deleteAll();
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -342,9 +367,10 @@ public class QuoteController {
 	public ResponseEntity<byte[]> genQuoteImage(){
 
 		Iterable<Quote> allQuotesIterable = quoteRepository.findAll();
-		List<Quote> allQuotes = StreamSupport.stream(allQuotesIterable.spliterator(), false).collect(Collectors.toList());
+		List<Quote> allQuotes = StreamSupport.stream(allQuotesIterable.spliterator(), false)
+				.collect(Collectors.toList());
 
-		Quote randQuote = allQuotes.get((int)Math.floor(allQuotes.size()*Math.random()));
+		Quote randQuote = allQuotes.get((int) Math.floor(allQuotes.size() * Math.random()));
 
 		final HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.IMAGE_PNG);
@@ -360,10 +386,10 @@ public class QuoteController {
 
 			g2d.drawImage(img, 0, 0, null);
 
-			final String owner= characterRepository.findById(randQuote.getCharacterID()).get().getName();
+			final String owner = characterRepository.findById(randQuote.getCharacterID()).get().getName();
 
 			g2d.setColor(Color.green);
-			writeTextToImage(g2d,randQuote.getQuoteText(), owner, width, height);
+			utils.writeTextToImage(g2d, randQuote.getQuoteText(), owner, width, height);
 
 			g2d.dispose();
 

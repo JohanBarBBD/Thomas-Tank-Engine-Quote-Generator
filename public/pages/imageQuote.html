@@ -24,7 +24,7 @@
       href="../assets/favicon-16x16.png"
     />
     <link rel="manifest" href="../assets/site.webmanifest" />
-    <link rel="stylesheet" href="../styles/landing.css" />
+    <link rel="stylesheet" href="../styles/imageQuote.css" />
   </head>
   <body>
     <header>
@@ -37,19 +37,18 @@
         </ul>
       </nav>
     </header>
+
     <main>
+      <img id="imageElement" />
       <section class="buttons">
-        <h2>My Favorites</h2>
-        <a href="../pages/quotes.html" class="button"> View Quote </a>
-        <a href="../pages/imageQuote.html" class="button"> Meme Page </a>
-        <!-- todo add buttons links to pages -->
-      </section>
-      <section class="favorites">
-        <h2>My Favorites</h2>
-        <ul id="Favorites"></ul>
+        <button type="submit" onclick="handlePNGImage()" class="button">
+          Generate Quote
+        </button>
       </section>
     </main>
-    <footer></footer>
-    <script src="../scripts/landing.js" async defer></script>
+    <footer>
+      <p>&#128646; Developed By Train Yard Inc.</p>
+    </footer>
+    <script src="../scripts/imageQuote.js"></script>
   </body>
 </html>
