@@ -7,7 +7,7 @@ const queryParams = new URLSearchParams({
 let userId;
 
 quoteOfTheDay = {
-  url: 'https://tteapi-4-env.eba-7w3sxei8.af-south-1.elasticbeanstalk.com/api/quotes/quote-of-the-day',
+  url: 'https://tteapi-4-env.eba-7w3sxei8.af-south-1.elasticbeanstalk.com/api/quotes/random',
   text: 'quoteOfTheDayText',
   author: 'quoteOfTheDayAuthor',
   seasonEp: 'quoteOfTheDaySeasonEp',

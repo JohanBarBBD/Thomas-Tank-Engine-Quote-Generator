@@ -48,14 +48,14 @@ async function getFavorites() {
 
   const quoteIDs = myJson.map(item => item.quoteID);
   const quoteDetails = await Promise.all(quoteIDs.map(fetchQuoteDetails));
-  
+
 
 
   let list = document.getElementById('Favorites');
   for (let i = 0; i < quoteDetails.length; i++) {
-    
+
     let listItem = document.createElement('li');
-    listItem.innerText = `${quotequoteDetails[i].quoteText}`;
+    listItem.innerText = `${quoteDetails[i].quoteText}`;
     list.appendChild(listItem);
 
     }
