@@ -13,7 +13,7 @@ import com.example.tteapi.jwt.JWTValidation;
 import com.example.tteapi.model.Character;
 import com.example.tteapi.repository.CharacterRepository;
 
-@CrossOrigin(origins = "http://localhost:8081")
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api")
 public class CharacterController {

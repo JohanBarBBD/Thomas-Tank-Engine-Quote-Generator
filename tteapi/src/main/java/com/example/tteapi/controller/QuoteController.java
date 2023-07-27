@@ -1,11 +1,14 @@
 package com.example.tteapi.controller;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.TemporalAdjusters;
-import java.time.temporal.WeekFields;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,8 +17,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import javax.imageio.ImageIO;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,8 +33,9 @@ import com.example.tteapi.model.Favourite;
 import com.example.tteapi.repository.CharacterRepository;
 import com.example.tteapi.repository.FavouriteRepository;
 import com.example.tteapi.repository.QuoteRepository;
+import com.example.tteapi.utils.ImageUtils;
 
-@CrossOrigin(origins = "http://localhost:8081")
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api")
 public class QuoteController {
@@ -267,5 +275,51 @@ public class QuoteController {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
+	}
+
+	@GetMapping("/quote/image")
+	public ResponseEntity<byte[]> genQuoteImage() {
+
+		ImageUtils utils = ImageUtils.getInstance();
+
+		Iterable<Quote> allQuotesIterable = quoteRepository.findAll();
+		List<Quote> allQuotes = StreamSupport.stream(allQuotesIterable.spliterator(), false)
+				.collect(Collectors.toList());
+
+		Quote randQuote = allQuotes.get((int) Math.floor(allQuotes.size() * Math.random()));
+
+		final HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.IMAGE_PNG);
+
+		try {
+			BufferedImage img = ImageIO.read(QuoteController.class.getClassLoader().getResource("QuoteBackground.png"));
+
+			int width = img.getWidth();
+			int height = img.getHeight();
+
+			BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+			Graphics2D g2d = bufferedImage.createGraphics();
+
+			g2d.drawImage(img, 0, 0, null);
+
+			final String owner = characterRepository.findById(randQuote.getCharacterID()).get().getName();
+
+			g2d.setColor(Color.green);
+			utils.writeTextToImage(g2d, randQuote.getQuoteText(), owner, width, height);
+
+			g2d.dispose();
+
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ImageIO.write(bufferedImage, "png", baos);
+			byte[] bytes = baos.toByteArray();
+
+			return new ResponseEntity<byte[]>(bytes, headers, HttpStatus.CREATED);
+
+		} catch (Exception e) {
+			System.out.println("Something went wrong generating the quote");
+			System.out.println(e.toString());
+		}
+
+		return new ResponseEntity<byte[]>(new byte[0], headers, HttpStatus.CREATED);
 	}
 }

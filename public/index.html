@@ -20,26 +20,27 @@
         <main>
             <h2>Login</h2>
             <div class="g_id_signin"
-                data-type="standard"
-                data-size="large"
-                data-theme="outline"
-                data-text="sign_in_with"
-                data-shape="rectangular"
-                data-logo_alignment="left"
-                >
-                
-            </div> 
-            <div id="g_id_onload"
-                data-client_id="464126849918-8ou4gq3nbas5vqs7n5o939v9t346vgsi.apps.googleusercontent.com"
-                data-login_uri="https://d14gajbnv0ctpl.cloudfront.net/"
-                data-auto_prompt="false">
+                 data-type="standard"
+                 data-shape="pill"
+                 data-theme="filled_blue"
+                 data-text="signin_with"
+                 data-size="large"
+                 data-logo_alignment="left">
             </div>
-     
+            <div id="g_id_onload"
+                 data-client_id="464126849918-8ou4gq3nbas5vqs7n5o939v9t346vgsi.apps.googleusercontent.com"
+                 data-context="signin"
+                 data-ux_mode="popup"
+                 data-login_uri="http://tteapi-4-env.eba-7w3sxei8.af-south-1.elasticbeanstalk.com/api/users/login"
+                 data-auto_prompt="false">
+            </div>
+
         </main>
         <footer>
 
         </footer>
 
-        <script src="https://accounts.google.com/gsi/client" async defer></script>
+        <script src="https://accounts.google.com/gsi/client" async></script>
+        <script src="./scripts/main.js" async></script>
     </body>
 </html>
