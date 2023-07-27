@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.example.tteapi.jwt.JWTValidation;
 import com.example.tteapi.model.Character;
 import com.example.tteapi.repository.CharacterRepository;
 
@@ -17,16 +18,23 @@ import com.example.tteapi.repository.CharacterRepository;
 @RequestMapping("/api")
 public class CharacterController {
 
+	JWTValidation jwtValidation = new JWTValidation();
+
 	@Autowired
 	CharacterRepository characterRepository;
 
 	@GetMapping("/characters")
-	public ResponseEntity<List<Character>> getAllCharacters() {
+	public ResponseEntity<List<Character>> getAllCharacters(@RequestParam("jwt") String jwt) {
+		boolean isValidToken = jwtValidation.validateToken(jwt);
+		if (!isValidToken) {
+			return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+		}
+
 		try {
 			List<Character> characters = new ArrayList<Character>();
 
 			characterRepository.findAll().forEach(characters::add);
-			
+
 			return new ResponseEntity<>(characters, HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -34,7 +42,12 @@ public class CharacterController {
 	}
 
 	@GetMapping("/characters/{id}")
-	public ResponseEntity<Character> getCharacterById(@PathVariable("id") long id) {
+	public ResponseEntity<Character> getCharacterById(@PathVariable("id") long id, @RequestParam("jwt") String jwt) {
+		boolean isValidToken = jwtValidation.validateToken(jwt);
+		if (!isValidToken) {
+			return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+		}
+		
 		Optional<Character> characterData = characterRepository.findById(id);
 
 		if (characterData.isPresent()) {
@@ -45,7 +58,8 @@ public class CharacterController {
 	}
 
 	@PostMapping("/characters")
-	public ResponseEntity<Character> createCharacter(@RequestBody Character character) {
+	public ResponseEntity<Character> createCharacter(@RequestBody Character character,
+			@RequestParam("jwt") String jwt) {
 		try {
 			Character _character = characterRepository
 					.save(new Character(character.getName()));
@@ -56,7 +70,8 @@ public class CharacterController {
 	}
 
 	@PostMapping("/characters/batch-create")
-	public ResponseEntity<List<Character>> createCharacters(@RequestBody List<Character> characters) {
+	public ResponseEntity<List<Character>> createCharacters(@RequestBody List<Character> characters,
+			@RequestParam("jwt") String jwt) {
 		try {
 			List<Character> savedCharacters = new ArrayList<>();
 			for (Character character : characters) {
@@ -70,7 +85,7 @@ public class CharacterController {
 	}
 
 	@DeleteMapping("/characters/{id}")
-	public ResponseEntity<HttpStatus> deleteCharacter(@PathVariable("id") long id) {
+	public ResponseEntity<HttpStatus> deleteCharacter(@PathVariable("id") long id, @RequestParam("jwt") String jwt) {
 		try {
 			characterRepository.deleteById(id);
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);

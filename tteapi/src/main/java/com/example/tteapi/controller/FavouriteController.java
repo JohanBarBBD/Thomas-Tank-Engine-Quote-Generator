@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.example.tteapi.jwt.JWTValidation;
 import com.example.tteapi.model.Favourite;
 import com.example.tteapi.model.Quote;
 import com.example.tteapi.model.User;
@@ -22,13 +23,20 @@ import com.example.tteapi.repository.UserRepository;
 @RequestMapping("/api")
 public class FavouriteController {
 
+    JWTValidation jwtValidation = new JWTValidation();
+
     @Autowired
     FavouriteRepository favouriteRepository;
     QuoteRepository quoteRepository;
     UserRepository userRepository;
 
     @GetMapping("/favourites")
-    public ResponseEntity<List<Favourite>> getAllFavourites() {
+    public ResponseEntity<List<Favourite>> getAllFavourites(@RequestParam("jwt") String jwt) {
+        boolean isValidToken = jwtValidation.validateToken(jwt);
+        if (!isValidToken) {
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        }
+
         try {
             List<Favourite> favourites = new ArrayList<Favourite>();
 
@@ -41,7 +49,13 @@ public class FavouriteController {
     }
 
     @GetMapping("/favourites/{userId}")
-    public ResponseEntity<List<Favourite>> getUserFavourites(@PathVariable("userId") long userId) {
+    public ResponseEntity<List<Favourite>> getUserFavourites(@PathVariable("userId") long userId,
+            @RequestParam("jwt") String jwt) {
+        boolean isValidToken = jwtValidation.validateToken(jwt);
+        if (!isValidToken) {
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        }
+
         try {
             List<Favourite> userFavourites = favouriteRepository.findByUserID(userId);
 
