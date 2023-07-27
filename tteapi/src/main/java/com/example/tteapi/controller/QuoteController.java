@@ -22,6 +22,7 @@ import javax.imageio.ImageIO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -233,6 +234,17 @@ public class QuoteController {
 		} catch (Exception e) {
 			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+	}
+
+	@GetMapping("/quotes/random")
+	public ResponseEntity<Quote> getRandomQuote(@RequestParam("jwt") String jwt) {
+		Iterable<Quote> allQuotesIterable = quoteRepository.findAll();
+		List<Quote> allQuotes = StreamSupport.stream(allQuotesIterable.spliterator(), false)
+				.collect(Collectors.toList());
+
+		Quote randQuote = allQuotes.get((int) Math.floor(allQuotes.size() * Math.random()));
+
+		return new ResponseEntity<Quote>(randQuote, HttpStatus.OK);
 	}
 
 	@PostMapping("/quotes")
