@@ -5,7 +5,7 @@ const queryParams = new URLSearchParams({
 });
 
 quoteOfTheDay = {
-  url: 'http://tteapi-4-env.eba-7w3sxei8.af-south-1.elasticbeanstalk.com/api/quotes/quote-of-the-day',
+  url: 'https://tteapi-4-env.eba-7w3sxei8.af-south-1.elasticbeanstalk.com/api/quotes/quote-of-the-day',
   text: 'quoteOfTheDayText',
   author: 'quoteOfTheDayAuthor',
   seasonEp: 'quoteOfTheDaySeasonEp',
@@ -13,7 +13,7 @@ quoteOfTheDay = {
 };
 
 quoteOfTheWeek = {
-  url: 'http://tteapi-4-env.eba-7w3sxei8.af-south-1.elasticbeanstalk.com/api/quotes/quote-of-the-week',
+  url: 'https://tteapi-4-env.eba-7w3sxei8.af-south-1.elasticbeanstalk.com/api/quotes/quote-of-the-week',
   text: 'quoteOfTheWeekText',
   author: 'quoteOfTheWeekAuthor',
   seasonEp: 'quoteOfTheWeekSeasonEp',
@@ -21,7 +21,7 @@ quoteOfTheWeek = {
 };
 
 quoteOfTheMonth = {
-  url: 'http://tteapi-4-env.eba-7w3sxei8.af-south-1.elasticbeanstalk.com/api/quotes/quote-of-the-month',
+  url: 'https://tteapi-4-env.eba-7w3sxei8.af-south-1.elasticbeanstalk.com/api/quotes/quote-of-the-month',
   text: 'quoteOfTheMonthText',
   author: 'quoteOfTheMonthAuthor',
   seasonEp: 'quoteOfTheMonthSeasonEp',
@@ -61,7 +61,7 @@ function getQuote(quote) {
 
 function getCharacter(id, author) {
   let url =
-    'http://tteapi-4-env.eba-7w3sxei8.af-south-1.elasticbeanstalk.com/api/characters/' +
+    'https://tteapi-4-env.eba-7w3sxei8.af-south-1.elasticbeanstalk.com/api/characters/' +
     id;
   httpGet(url)
     .then(function (response) {
@@ -75,7 +75,7 @@ function getCharacter(id, author) {
 function favoriteQuoteOfTheDay() {
   const data = { UserID: userId, QuoteID: quoteOfTheDay.QuoteID };
   const url =
-    'http://tteapi-4-env.eba-7w3sxei8.af-south-1.elasticbeanstalk.com/api/favourites';
+    'https://tteapi-4-env.eba-7w3sxei8.af-south-1.elasticbeanstalk.com/api/favourites';
   fetch(url + '?' + queryParams, {
     method: 'POST',
     headers: {
@@ -92,7 +92,7 @@ function favoriteQuoteOfTheDay() {
 function favoriteQuoteOfTheWeek() {
   const data = { UserID: userId, QuoteID: quoteOfTheWeek.QuoteID };
   const url =
-    'http://tteapi-4-env.eba-7w3sxei8.af-south-1.elasticbeanstalk.com/api/favourites';
+    'https://tteapi-4-env.eba-7w3sxei8.af-south-1.elasticbeanstalk.com/api/favourites';
   fetch(url + '?' + queryParams, {
     method: 'POST',
     headers: {
@@ -109,7 +109,7 @@ function favoriteQuoteOfTheWeek() {
 function favoriteQuoteOfTheMonth() {
   const data = { UserID: userId, QuoteID: quoteOfTheMonth.QuoteID };
   const url =
-    'http://tteapi-4-env.eba-7w3sxei8.af-south-1.elasticbeanstalk.com/api/favourites';
+    'https://tteapi-4-env.eba-7w3sxei8.af-south-1.elasticbeanstalk.com/api/favourites';
   fetch(url + '?' + queryParams, {
     method: 'POST',
     headers: {
