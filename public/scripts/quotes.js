@@ -1,9 +1,30 @@
-let quoteOfTheDay = { quoteText: '', quoteEp: '', quoteSeason: '' };
-let quoteOfTheWeek = { quoteText: '', quoteEp: '', quoteSeason: '' };
-let quoteOfTheMonth = { quoteText: '', quoteEp: '', quoteSeason: '' };
+quoteOfTheDay = {
+  url: 'http://tteapi-4-env.eba-7w3sxei8.af-south-1.elasticbeanstalk.com/api/quotes/quote-of-the-day',
+  text: 'quoteOfTheDayText',
+  author: 'quoteOfTheDayAuthor',
+  seasonEp: 'quoteOfTheDaySeasonEp',
+  quoteId: undefined,
+};
 
-document.getElementById('quoteOfTheDayText').textContent =
-  quoteOfTheDay.quoteText;
+quoteOfTheWeek = {
+  url: 'http://tteapi-4-env.eba-7w3sxei8.af-south-1.elasticbeanstalk.com/api/quotes/quote-of-the-week',
+  text: 'quoteOfTheWeekText',
+  author: 'quoteOfTheWeekAuthor',
+  seasonEp: 'quoteOfTheWeekSeasonEp',
+  quoteId: undefined,
+};
+
+quoteOfTheMonth = {
+  url: 'http://tteapi-4-env.eba-7w3sxei8.af-south-1.elasticbeanstalk.com/api/quotes/quote-of-the-month',
+  text: 'quoteOfTheMonthText',
+  author: 'quoteOfTheMonthAuthor',
+  seasonEp: 'quoteOfTheMonthSeasonEp',
+  quoteId: undefined,
+};
+
+getQuote(quoteOfTheDay);
+getQuote(quoteOfTheWeek);
+getQuote(quoteOfTheMonth);
 
 function httpGet(url) {
   return fetch(url)
@@ -11,19 +32,37 @@ function httpGet(url) {
       if (!response.ok) {
         throw new Error('Request failed with status: ' + response.status);
       }
-      return response.text();
+      return response.json();
     })
     .catch(function (error) {
       throw error;
     });
 }
 
-var url =
-  'http://tteapi-4-env.eba-7w3sxei8.af-south-1.elasticbeanstalk.com/api/quotes/quote-of-the-day';
-httpGet(url)
-  .then(function (response) {
-    console.log('Response:', response);
-  })
-  .catch(function (error) {
-    console.error('Error:', error);
-  });
+function getQuote(quote) {
+  httpGet(quote.url)
+    .then(function (response) {
+      document.getElementById(quote.text).textContent = response.quoteText;
+      document.getElementById(quote.seasonEp).textContent =
+        'Season: ' + response.quoteSeason + ' Episode: ' + response.quoteEp;
+      quote.quoteId = response.id;
+      getCharacter(response.characterID, quote.author);
+    })
+    .catch(function (error) {
+      console.error('Error:', error);
+    });
+}
+
+function getCharacter(id, author) {
+  let url =
+    'http://tteapi-4-env.eba-7w3sxei8.af-south-1.elasticbeanstalk.com/api/characters/' +
+    id;
+  httpGet(url)
+    .then(function (response) {
+      console.log(response);
+      document.getElementById(author).textContent = 'Author: ' + response.name;
+    })
+    .catch(function (error) {
+      console.error('Error:', error);
+    });
+}

@@ -100,7 +100,7 @@ footer {
   text-align: center;
   position: fixed;
   bottom: 0;
-  width: 100%;
+  width: 100vw;
   height: 30px;
   font-size: 18px;
   text-shadow: rgb(0, 0, 0) 1px 0 10px;
