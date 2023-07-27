@@ -29,6 +29,12 @@ const userQueryParam = new URLSearchParams({ email: localStorage.getItem('user')
 })
 const tokenQueryParam = new URLSearchParams({ jwt: localStorage.getItem('token')})
 
+async function fetchQuoteDetails(quoteID) {
+  const response = await fetch(`${apiUrl}/api/quotes/${quoteID}?${tokenQueryParam}`);
+  const quoteData = await response.json();
+  return quoteData;
+}
+
 async function getFavorites() {
   const userIdResponse = await fetch(
     `${apiUrl}/api/users/by-email?${userQueryParam}&${tokenQueryParam}`
@@ -39,10 +45,17 @@ async function getFavorites() {
       `${apiUrl}/api/favourites/${userId}?${tokenQueryParam}`
   );
   const myJson = await favoritesResponse.json();
+
+  const quoteIDs = myJson.map(item => item.quoteID);
+  const quoteDetails = await Promise.all(quoteIDs.map(fetchQuoteDetails));
+  
+
+
   let list = document.getElementById('Favorites');
-  for (let i = 0; i < myJson.length; i++) {
+  for (let i = 0; i < quoteDetails.length; i++) {
+    
     let listItem = document.createElement('li');
-    listItem.innerText = `${myJson[i]}`;
+    listItem.innerText = `${quotequoteDetails[i].quoteText}`;
     list.appendChild(listItem);
 
     }
