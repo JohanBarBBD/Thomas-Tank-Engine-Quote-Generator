@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 
 import com.example.tteapi.jwt.JWTValidation;
 import com.example.tteapi.model.Favourite;
+import com.example.tteapi.model.Quote;
+import com.example.tteapi.model.User;
 import com.example.tteapi.repository.FavouriteRepository;
 import com.example.tteapi.repository.QuoteRepository;
 import com.example.tteapi.repository.UserRepository;
@@ -58,6 +60,34 @@ public class FavouriteController {
             return new ResponseEntity<>(userFavourites, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/favourite/add")
+    public ResponseEntity<?> addFavourite(@RequestBody int UserID, @RequestBody int QuoteID){
+
+        final Quote quote = (quoteRepository.findById((long)QuoteID)).get();
+        final User user = (userRepository.findById((long)QuoteID)).get();
+
+        List<Favourite> existingFavorites = favouriteRepository.findByUserID(user.getId());
+
+        boolean isDuplicateFavorite = existingFavorites.stream()
+                .anyMatch(fav -> fav.getQuoteID() == quote.getId());
+        if (isDuplicateFavorite)
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("User has already favourited this quote.");
+        else{
+            try {
+                final Favourite fav = new Favourite();
+                fav.setQuoteID(QuoteID);
+                fav.setUserID(UserID);
+
+                favouriteRepository.save(fav);
+                return ResponseEntity.status(HttpStatus.OK).body("Favourite Added");
+
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something went wrong on the server "+e.toString());
+
+            }
         }
     }
 
