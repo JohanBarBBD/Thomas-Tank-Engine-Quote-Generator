@@ -38,7 +38,7 @@ async function getFavorites() {
       const response = await fetch(`${apiUrl}/api/favourites`)
         const myJson = await response.json();
         let list = document.getElementById('Favorites');
-        for(let i =0; i< myJson.length && i<10; i++){
+        for(let i =0; i< myJson.length; i++){
           let listItem = document.createElement('li');
           listItem.innerText=`${myJson[i]}`;
           list.appendChild(listItem);
