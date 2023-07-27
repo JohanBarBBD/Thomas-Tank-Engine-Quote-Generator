@@ -26,7 +26,7 @@ import io.jsonwebtoken.security.Keys;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 
-@CrossOrigin(origins = "http://localhost:8081")
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api")
 public class UserController {
