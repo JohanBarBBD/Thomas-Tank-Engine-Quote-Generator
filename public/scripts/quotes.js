@@ -70,3 +70,11 @@ function getCharacter(id, author) {
       console.error('Error:', error);
     });
 }
+
+// window.addEventListener('load', async () => {
+//   const token = localStorage.getItem('token');
+
+//   if (!token) {
+//     window.location.href = '../index.html';
+//   }
+// });

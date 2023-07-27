@@ -117,4 +117,8 @@ footer {
   .button {
     width: 200px;
   }
+
+  main {
+    top: 20px;
+  }
 }
