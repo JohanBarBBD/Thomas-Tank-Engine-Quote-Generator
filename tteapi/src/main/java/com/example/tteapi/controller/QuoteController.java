@@ -1,13 +1,11 @@
 package com.example.tteapi.controller;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.TemporalAdjusters;
-import java.time.temporal.WeekFields;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -24,10 +22,7 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
-import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -259,7 +254,7 @@ public class QuoteController {
 
 	private final int FontSize = 60;
 
-	private final Font[] fonts = new Font[] { 
+	private final Font[] fonts = new Font[] {
 		new Font("Roboto", Font.PLAIN, FontSize),
 		new Font("Arial", Font.PLAIN, FontSize),
 		new Font("Palatino", Font.PLAIN, FontSize),
@@ -328,7 +323,7 @@ public class QuoteController {
 		img.setRenderingHint(
         RenderingHints.KEY_TEXT_ANTIALIASING,
         RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-		
+
 		int yOffset = (height - FontSize*wordLayout.length)/2;
 
 		for (int x = 0; x < wordLayout.length; x++){
@@ -345,7 +340,7 @@ public class QuoteController {
 
 	@GetMapping("/quote/image")
 	public ResponseEntity<byte[]> genQuoteImage(){
-		
+
 		Iterable<Quote> allQuotesIterable = quoteRepository.findAll();
 		List<Quote> allQuotes = StreamSupport.stream(allQuotesIterable.spliterator(), false).collect(Collectors.toList());
 
@@ -356,10 +351,10 @@ public class QuoteController {
 
 		try {
 			BufferedImage img = ImageIO.read(QuoteController.class.getClassLoader().getResource("QuoteBackground.png"));
-			
+
 			int width = img.getWidth();
 			int height = img.getHeight();
-			
+
 			BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 			Graphics2D g2d = bufferedImage.createGraphics();
 
@@ -374,7 +369,7 @@ public class QuoteController {
 
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			ImageIO.write(bufferedImage, "png", baos);
-			byte[] bytes = baos.toByteArray();	
+			byte[] bytes = baos.toByteArray();
 
 			return new ResponseEntity<byte[]>(bytes, headers, HttpStatus.CREATED);
 

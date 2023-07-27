@@ -17,9 +17,9 @@
             "mainClass": "com.example.tteapi.TteapiApplication",
             "projectName": "tteapi",
             "env": {
-                "DB_USERNAME": "<username_here>",
-                "DB_PASSWORD": "<password_here>"
-              }
+                "DB_USERNAME": "TTTEADBAdmin",
+                "DB_PASSWORD": "IPromiseThisPasswordIsMoreSecureThanThePreviousPasswordPinkyPromise69420_;-}"
+            }
         }
     ]
 }

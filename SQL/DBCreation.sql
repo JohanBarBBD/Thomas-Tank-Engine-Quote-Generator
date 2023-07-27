@@ -1,12 +1,12 @@
 USE master;
 GO
 
-DROP DATABASE IF EXISTS TTTEADB;
+DROP DATABASE IF EXISTS TTTEADB_TEST;
 
-CREATE DATABASE TTTEADB;
+CREATE DATABASE TTTEADB_TEST;
 GO
 
-USE TTTEADB;
+USE TTTEADB_TEST;
 GO
 
 CREATE TABLE [characters] (
@@ -32,7 +32,7 @@ CREATE TABLE [quotes] (
 GO
 
 CREATE TABLE [favourites] (
-	[id] BIGINT NOT NULL PRIMARY KEY,
+	[id] BIGINT NOT NULL PRIMARY KEY IDENTITY(1,1),
 	[quoteid] BIGINT NOT NULL,
 	[userid] BIGINT NOT NULL,
 	[date_favourited] DATETIME NOT NULL,
@@ -51,9 +51,9 @@ GO
 
 CREATE PROCEDURE insertQuoteWithCharacterName @Quote VARCHAR(400), @CharName VARCHAR(100), @EPNum INT, @SeasonNum INT
 AS
-declare @id INT
-select  @id = [characters].id 
-from    [characters]
+DECLARE @id INT
+SELECT  @id = [characters].id
+FROM    [characters]
 WHERE [characters].name = @CharName;
 
 INSERT INTO [quotes] VALUES
@@ -63,6 +63,31 @@ INSERT INTO [quotes] VALUES
 	@Quote,
 	@id
 );
+GO
+
+CREATE PROCEDURE insertFavourite @QuoteID INT, @UserID INT
+AS
+INSERT INTO [favourites] VALUES
+(
+	@QuoteID,
+	@UserID,
+	GETDATE()
+);
+GO
+
+CREATE VIEW userAndFavs
+AS
+SELECT 
+	[users].email,
+	[users].[name],
+	[quotes].quote_text,
+	[quotes].quote_ep AS [Episode],
+	[quotes].quote_season AS [Season],
+	[characters].[name] AS [Spoken by]
+FROM users
+INNER JOIN favourites ON [users].id = [favourites].userid
+INNER JOIN quotes ON [quotes].id = favourites.quoteid
+INNER JOIN characters ON [quotes].characterid = characters.id
 GO
 
 INSERT INTO [users] VALUES
@@ -85,7 +110,63 @@ INSERT INTO [users] VALUES
 (
 	'Jackson@gmail.com',
 	'Jackson'
-);
+),
+(
+	'Jerry@gmail.com',
+	'Jerry'
+),
+(
+	'Jean@gmail.com',
+	'Jean'
+),
+(
+	'Justin@gmail.com',
+	'Justin'
+),
+(
+	'Jack@gmail.com',
+	'Jack'
+),
+(
+	'Joel@gmail.com',
+	'Joel'
+),
+(
+	'Jude@gmail.com',
+	'Jude'
+),
+(
+	'Jacob@gmail.com',
+	'Jacob'
+),
+(
+	'John@gmail.com',
+	'John'
+),
+(
+	'Jace@gmail.com',
+	'Jace'
+),
+(
+	'Jayden@gmail.com',
+	'Jayden'
+),
+(
+	'Jesse@gmail.com',
+	'Jesse'
+),
+(
+	'Jasper@gmail.com',
+	'Jasper'
+),
+(
+	'Julian@gmail.com',
+	'Julian'
+),
+(
+	'Jake@gmail.com',
+	'Jake'
+)
 GO
 
 INSERT INTO [characters] VALUES
@@ -335,3 +416,95 @@ EXEC insertQuoteWithCharacterName @Quote = 'His fire had gone out',  @CharName =
 EXEC insertQuoteWithCharacterName @Quote = 'Soot and dirt from the tunnel had spoiled his lovely green paint with red stripes anyway',  @CharName = 'Ringo Starr', @EPNum = 3, @SeasonNum = 1;
 EXEC insertQuoteWithCharacterName @Quote = 'He wondered if he would ever be allowed to pull trains again',  @CharName = 'Ringo Starr', @EPNum = 3, @SeasonNum = 1;
 EXEC insertQuoteWithCharacterName @Quote = 'But I think he deserved his punishment, don''t you?',  @CharName = 'Ringo Starr', @EPNum = 3, @SeasonNum = 1;
+GO
+
+EXEC insertFavourite @QuoteID =  188, @UserID =    1;
+EXEC insertFavourite @QuoteID =    5, @UserID =    1;
+EXEC insertFavourite @QuoteID =  129, @UserID =    1;
+EXEC insertFavourite @QuoteID =    9, @UserID =    1;
+EXEC insertFavourite @QuoteID =  175, @UserID =    2;
+EXEC insertFavourite @QuoteID =   11, @UserID =    2;
+EXEC insertFavourite @QuoteID =   15, @UserID =    2;
+EXEC insertFavourite @QuoteID =  164, @UserID =    2;
+EXEC insertFavourite @QuoteID =  121, @UserID =    2;
+EXEC insertFavourite @QuoteID =   45, @UserID =    2;
+EXEC insertFavourite @QuoteID =  125, @UserID =    2;
+EXEC insertFavourite @QuoteID =  169, @UserID =    3;
+EXEC insertFavourite @QuoteID =  161, @UserID =    3;
+EXEC insertFavourite @QuoteID =  182, @UserID =    3;
+EXEC insertFavourite @QuoteID =   23, @UserID =    3;
+EXEC insertFavourite @QuoteID =  171, @UserID =    3;
+EXEC insertFavourite @QuoteID =   90, @UserID =    3;
+EXEC insertFavourite @QuoteID =   11, @UserID =    3;
+EXEC insertFavourite @QuoteID =  135, @UserID =    3;
+EXEC insertFavourite @QuoteID =    2, @UserID =    4;
+EXEC insertFavourite @QuoteID =    1, @UserID =    4;
+EXEC insertFavourite @QuoteID =  100, @UserID =    4;
+EXEC insertFavourite @QuoteID =   19, @UserID =    5;
+EXEC insertFavourite @QuoteID =  160, @UserID =    5;
+EXEC insertFavourite @QuoteID =  174, @UserID =    5;
+EXEC insertFavourite @QuoteID =  170, @UserID =    5;
+EXEC insertFavourite @QuoteID =   26, @UserID =    5;
+EXEC insertFavourite @QuoteID =  112, @UserID =    5;
+EXEC insertFavourite @QuoteID =   78, @UserID =    6;
+EXEC insertFavourite @QuoteID =   25, @UserID =    7;
+EXEC insertFavourite @QuoteID =  162, @UserID =    7;
+EXEC insertFavourite @QuoteID =  154, @UserID =    7;
+EXEC insertFavourite @QuoteID =   92, @UserID =    7;
+EXEC insertFavourite @QuoteID =  130, @UserID =    7;
+EXEC insertFavourite @QuoteID =   48, @UserID =    7;
+EXEC insertFavourite @QuoteID =   69, @UserID =    7;
+EXEC insertFavourite @QuoteID =    3, @UserID =    8;
+EXEC insertFavourite @QuoteID =   13, @UserID =    8;
+EXEC insertFavourite @QuoteID =  175, @UserID =    8;
+EXEC insertFavourite @QuoteID =  108, @UserID =    9;
+EXEC insertFavourite @QuoteID =   86, @UserID =    9;
+EXEC insertFavourite @QuoteID =   23, @UserID =    9;
+EXEC insertFavourite @QuoteID =   60, @UserID =    9;
+EXEC insertFavourite @QuoteID =  106, @UserID =    9;
+EXEC insertFavourite @QuoteID =  137, @UserID =    9;
+EXEC insertFavourite @QuoteID =  102, @UserID =    9;
+EXEC insertFavourite @QuoteID =   10, @UserID =    9;
+EXEC insertFavourite @QuoteID =  162, @UserID =   10;
+EXEC insertFavourite @QuoteID =  180, @UserID =   10;
+EXEC insertFavourite @QuoteID =   47, @UserID =   10;
+EXEC insertFavourite @QuoteID =  118, @UserID =   12;
+EXEC insertFavourite @QuoteID =   69, @UserID =   12;
+EXEC insertFavourite @QuoteID =   63, @UserID =   12;
+EXEC insertFavourite @QuoteID =   24, @UserID =   12;
+EXEC insertFavourite @QuoteID =  178, @UserID =   12;
+EXEC insertFavourite @QuoteID =  110, @UserID =   12;
+EXEC insertFavourite @QuoteID =   84, @UserID =   13;
+EXEC insertFavourite @QuoteID =  138, @UserID =   14;
+EXEC insertFavourite @QuoteID =   84, @UserID =   14;
+EXEC insertFavourite @QuoteID =    9, @UserID =   14;
+EXEC insertFavourite @QuoteID =   57, @UserID =   14;
+EXEC insertFavourite @QuoteID =  186, @UserID =   14;
+EXEC insertFavourite @QuoteID =  165, @UserID =   14;
+EXEC insertFavourite @QuoteID =  188, @UserID =   14;
+EXEC insertFavourite @QuoteID =  186, @UserID =   15;
+EXEC insertFavourite @QuoteID =   16, @UserID =   15;
+EXEC insertFavourite @QuoteID =  124, @UserID =   15;
+EXEC insertFavourite @QuoteID =   54, @UserID =   15;
+EXEC insertFavourite @QuoteID =  106, @UserID =   15;
+EXEC insertFavourite @QuoteID =   55, @UserID =   15;
+EXEC insertFavourite @QuoteID =   25, @UserID =   16;
+EXEC insertFavourite @QuoteID =  111, @UserID =   16;
+EXEC insertFavourite @QuoteID =   47, @UserID =   16;
+EXEC insertFavourite @QuoteID =   23, @UserID =   17;
+EXEC insertFavourite @QuoteID =   69, @UserID =   17;
+EXEC insertFavourite @QuoteID =  147, @UserID =   17;
+EXEC insertFavourite @QuoteID =   97, @UserID =   17;
+EXEC insertFavourite @QuoteID =  145, @UserID =   17;
+EXEC insertFavourite @QuoteID =   13, @UserID =   17;
+EXEC insertFavourite @QuoteID =  130, @UserID =   17;
+EXEC insertFavourite @QuoteID =   63, @UserID =   17;
+EXEC insertFavourite @QuoteID =  101, @UserID =   18;
+EXEC insertFavourite @QuoteID =  124, @UserID =   18;
+EXEC insertFavourite @QuoteID =   22, @UserID =   18;
+EXEC insertFavourite @QuoteID =  100, @UserID =   18;
+EXEC insertFavourite @QuoteID =   92, @UserID =   18;
+EXEC insertFavourite @QuoteID =  139, @UserID =   18;
+EXEC insertFavourite @QuoteID =   38, @UserID =   18;
+EXEC insertFavourite @QuoteID =   25, @UserID =   18;
+EXEC insertFavourite @QuoteID =  180, @UserID =   18;

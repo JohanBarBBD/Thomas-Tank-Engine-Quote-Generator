@@ -155,3 +155,5 @@ dist
 .pnp.*
 application.properties
 .properties
+
+.vscode
