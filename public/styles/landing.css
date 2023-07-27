@@ -76,5 +76,8 @@ footer {
 
 li{
   padding-bottom: 0.5rem;
+  color: #ffffff;
+  font-family: var(--font-family);
+  text-shadow: rgb(0, 0, 0) 1px 0 10px;
 }
 
