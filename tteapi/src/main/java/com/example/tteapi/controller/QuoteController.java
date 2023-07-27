@@ -1,15 +1,15 @@
 package com.example.tteapi.controller;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.TemporalAdjusters;
-import java.time.temporal.WeekFields;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,15 +19,6 @@ import java.util.stream.StreamSupport;
 
 import javax.imageio.ImageIO;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-
-import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -36,16 +27,20 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.tteapi.model.Quote;
+import com.example.tteapi.jwt.JWTValidation;
 import com.example.tteapi.model.Character;
 import com.example.tteapi.model.Favourite;
 import com.example.tteapi.repository.CharacterRepository;
 import com.example.tteapi.repository.FavouriteRepository;
 import com.example.tteapi.repository.QuoteRepository;
+import com.example.tteapi.utils.ImageUtils;
 
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api")
 public class QuoteController {
+
+	JWTValidation jwtValidation = new JWTValidation();
 
 	@Autowired
 	QuoteRepository quoteRepository;
@@ -57,7 +52,12 @@ public class QuoteController {
 	FavouriteRepository favouriteRepository;
 
 	@GetMapping("/quotes")
-	public ResponseEntity<List<Quote>> getAllQuotes() {
+	public ResponseEntity<List<Quote>> getAllQuotes(@RequestParam("jwt") String jwt) {
+		boolean isValidToken = jwtValidation.validateToken(jwt);
+		if (!isValidToken) {
+			return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+		}
+
 		try {
 			List<Quote> quotes = new ArrayList<Quote>();
 
@@ -70,7 +70,12 @@ public class QuoteController {
 	}
 
 	@GetMapping("/quotes/{id}")
-	public ResponseEntity<Quote> getQuoteById(@PathVariable("id") long id) {
+	public ResponseEntity<Quote> getQuoteById(@PathVariable("id") long id, @RequestParam("jwt") String jwt) {
+		boolean isValidToken = jwtValidation.validateToken(jwt);
+		if (!isValidToken) {
+			return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+		}
+
 		Optional<Quote> tutorialData = quoteRepository.findById(id);
 
 		if (tutorialData.isPresent()) {
@@ -81,7 +86,12 @@ public class QuoteController {
 	}
 
 	@GetMapping("/quotes/quote-of-the-day")
-	public ResponseEntity<Quote> getQuoteOfTheDay() {
+	public ResponseEntity<Quote> getQuoteOfTheDay(@RequestParam("jwt") String jwt) {
+		boolean isValidToken = jwtValidation.validateToken(jwt);
+		if (!isValidToken) {
+			return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+		}
+
 		int dayOfYear = LocalDate.now().getDayOfYear();
 
 		Iterable<Quote> allQuotesIterable = quoteRepository.findAll();
@@ -99,7 +109,12 @@ public class QuoteController {
 	}
 
 	@GetMapping("/quotes/quote-of-the-week")
-	public ResponseEntity<Quote> getQuoteOfTheWeek() {
+	public ResponseEntity<Quote> getQuoteOfTheWeek(@RequestParam("jwt") String jwt) {
+		boolean isValidToken = jwtValidation.validateToken(jwt);
+		if (!isValidToken) {
+			return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+		}
+
 		try {
 			Instant currentInstant = Instant.now();
 			ZoneId zoneId = ZoneId.systemDefault();
@@ -148,7 +163,12 @@ public class QuoteController {
 	}
 
 	@GetMapping("/quotes/quote-of-the-month")
-	public ResponseEntity<Quote> getQuoteOfTheMonth() {
+	public ResponseEntity<Quote> getQuoteOfTheMonth(@RequestParam("jwt") String jwt) {
+		boolean isValidToken = jwtValidation.validateToken(jwt);
+		if (!isValidToken) {
+			return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+		}
+		
 		try {
 			LocalDate currentDate = LocalDate.now();
 			LocalDate firstDayOfMonth = currentDate.withDayOfMonth(1);
@@ -195,7 +215,7 @@ public class QuoteController {
 	}
 
 	@PostMapping("/quotes")
-	public ResponseEntity<Quote> createQuote(@RequestBody Quote quote) {
+	public ResponseEntity<Quote> createQuote(@RequestBody Quote quote, @RequestParam("jwt") String jwt) {
 		try {
 			Long characterId = quote.getCharacterID();
 
@@ -215,7 +235,7 @@ public class QuoteController {
 	}
 
 	@PostMapping("/quotes/batch-create")
-	public ResponseEntity<List<Quote>> createQuotes(@RequestBody List<Quote> quotes) {
+	public ResponseEntity<List<Quote>> createQuotes(@RequestBody List<Quote> quotes, @RequestParam("jwt") String jwt) {
 		try {
 			List<Quote> savedQuotes = new ArrayList<>();
 			for (Quote quote : quotes) {
@@ -237,7 +257,7 @@ public class QuoteController {
 	}
 
 	@DeleteMapping("/quotes/{id}")
-	public ResponseEntity<HttpStatus> deleteQuote(@PathVariable("id") long id) {
+	public ResponseEntity<HttpStatus> deleteQuote(@PathVariable("id") long id, @RequestParam("jwt") String jwt) {
 		try {
 			quoteRepository.deleteById(id);
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -247,7 +267,7 @@ public class QuoteController {
 	}
 
 	@DeleteMapping("/quotes")
-	public ResponseEntity<HttpStatus> deleteAllQuotes() {
+	public ResponseEntity<HttpStatus> deleteAllQuotes(@RequestParam("jwt") String jwt) {
 		try {
 			quoteRepository.deleteAll();
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -257,124 +277,41 @@ public class QuoteController {
 
 	}
 
-	private final int FontSize = 60;
-
-	private final Font[] fonts = new Font[] { 
-		new Font("Roboto", Font.PLAIN, FontSize),
-		new Font("Arial", Font.PLAIN, FontSize),
-		new Font("Palatino", Font.PLAIN, FontSize),
-		new Font("Sans-serif", Font.PLAIN, FontSize),
-		new Font("Futura", Font.PLAIN, FontSize),
-		new Font("Times New Roman", Font.PLAIN, FontSize),
-		new Font("Garamond", Font.PLAIN, FontSize),
-		new Font("Helvetica", Font.PLAIN, FontSize)
-	};
-
-	private final Color[] fontColors = new Color[]{
-		Color.cyan,
-		Color.green,
-		Color.BLACK,
-		Color.red,
-		Color.blue
-	};
-
-	private int charSpace(int width,int padding){
-		width -= padding;
-		final int available = width/ padding;
-		return available;
-	}
-
-	private String[] wordLayout(String Words, int charsAvailable){
-		List<String> lstStr = new ArrayList<String>(Arrays.asList(Words.split(" ")));
-		List<String> WordMatrix = new ArrayList<String>();
-
-		int currentLength = 0;
-		String currentRow = "";
-		for (String word : lstStr) {
-			currentLength += word.length() + 1;
-			if (currentLength <= charsAvailable)
-			{
-				currentRow += word+" ";
-			}
-			else
-			{
-				WordMatrix.add(currentRow.substring(0, currentRow.length()-1));
-				currentRow = word +" ";
-				currentLength = currentRow.length();
-			}
-		}
-		WordMatrix.add(currentRow.substring(0, currentRow.length()-1));
-
-
-		String[] strArr = new String[WordMatrix.size()];
-		strArr = WordMatrix.toArray(strArr);
-
-		return strArr;
-	}
-
-	private void writeTextToImage(Graphics2D img, String text, String quoteOwner,int width,int height){
-		//Image Size = 565 x 589
-		final Font randomFont = fonts[(int)Math.floor(Math.random()*(fonts.length))];
-		final Color fontCol = fontColors[(int)Math.floor(Math.random()*(fontColors.length))];
-
-		final int fontConvertedSize = 30;
-
-		final int spaceAvailable = charSpace(width,fontConvertedSize);
-		final String[] wordLayout =wordLayout(text, spaceAvailable);
-
-		img.setFont(randomFont);
-		img.setColor(fontCol);
-
-		img.setRenderingHint(
-        RenderingHints.KEY_TEXT_ANTIALIASING,
-        RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-		
-		int yOffset = (height - FontSize*wordLayout.length)/2;
-
-		for (int x = 0; x < wordLayout.length; x++){
-			String line = wordLayout[x];
-
-			int xOffset = (width -  img.getFontMetrics().stringWidth(line))/2;
-
-			img.drawString(((x == 0)?"\"":"")+line+((x == wordLayout.length - 1 )?'"':""), xOffset, yOffset);
-			yOffset += FontSize + 10;
-		}
-
-		img.drawString("~"+quoteOwner,  (width - quoteOwner.length()*fontConvertedSize)/2, height - FontSize - 20 );
-	}
-
 	@GetMapping("/quote/image")
-	public ResponseEntity<byte[]> genQuoteImage(){
-		
-		Iterable<Quote> allQuotesIterable = quoteRepository.findAll();
-		List<Quote> allQuotes = StreamSupport.stream(allQuotesIterable.spliterator(), false).collect(Collectors.toList());
+	public ResponseEntity<byte[]> genQuoteImage() {
 
-		Quote randQuote = allQuotes.get((int)Math.floor(allQuotes.size()*Math.random()));
+		ImageUtils utils = ImageUtils.getInstance();
+
+		Iterable<Quote> allQuotesIterable = quoteRepository.findAll();
+		List<Quote> allQuotes = StreamSupport.stream(allQuotesIterable.spliterator(), false)
+				.collect(Collectors.toList());
+
+		Quote randQuote = allQuotes.get((int) Math.floor(allQuotes.size() * Math.random()));
 
 		final HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.IMAGE_PNG);
 
 		try {
 			BufferedImage img = ImageIO.read(QuoteController.class.getClassLoader().getResource("QuoteBackground.png"));
-			
+
 			int width = img.getWidth();
 			int height = img.getHeight();
-			
+
 			BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 			Graphics2D g2d = bufferedImage.createGraphics();
 
 			g2d.drawImage(img, 0, 0, null);
 
-			final String owner= characterRepository.findById(randQuote.getCharacterID()).get().getName();
+			final String owner = characterRepository.findById(randQuote.getCharacterID()).get().getName();
 
 			g2d.setColor(Color.green);
-			writeTextToImage(g2d,randQuote.getQuoteText(), owner, width, height);
+			utils.writeTextToImage(g2d, randQuote.getQuoteText(), owner, width, height);
 
 			g2d.dispose();
 
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			ImageIO.write(bufferedImage, "png", baos);
-			byte[] bytes = baos.toByteArray();	
+			byte[] bytes = baos.toByteArray();
 
 			return new ResponseEntity<byte[]>(bytes, headers, HttpStatus.CREATED);
 
