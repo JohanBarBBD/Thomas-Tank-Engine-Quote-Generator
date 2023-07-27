@@ -46,7 +46,13 @@
           <p id="quoteOfTheDaySeasonEp" class="quote-author"></p>
           <p id="quoteOfTheDayAuthor" class="quote-author"></p>
           <section class="buttons">
-            <button class="button">Favorite Quote</button>
+            <button
+              type="submit"
+              onclick="favoriteQuoteOfTheDay()"
+              class="button"
+            >
+              Favorite Quote
+            </button>
           </section>
         </section>
         <section class="quote-container">
@@ -55,7 +61,14 @@
           <p id="quoteOfTheWeekSeasonEp" class="quote-author"></p>
           <p id="quoteOfTheWeekAuthor" class="quote-author"></p>
           <section class="buttons">
-            <button class="button">Favorite Quote</button>
+            <button
+              type="submit"
+              onclick="favoriteQuoteOfTheWeek()"
+              class="button"
+              class="button"
+            >
+              Favorite Quote
+            </button>
           </section>
         </section>
         <section class="quote-container">
@@ -63,7 +76,12 @@
           <p id="quoteOfTheMonthText" class="quote-text"></p>
           <p id="quoteOfTheMonthSeasonEp" class="quote-author"></p>
           <p id="quoteOfTheMonthAuthor" class="quote-author"></p>
-          <section class="buttons">
+          <section
+            type="submit"
+            onclick="favoriteQuoteOfTheMonth()"
+            class="button"
+            class="buttons"
+          >
             <button class="button">Favorite Quote</button>
           </section>
         </section>
@@ -72,6 +90,6 @@
     <footer>
       <p>&#128646; Developed By Train Yard Inc.</p>
     </footer>
-    <script src="../scripts/quotes.js"></script>
+    <script src="../scripts/quotes.js" async defer></script>
   </body>
 </html>

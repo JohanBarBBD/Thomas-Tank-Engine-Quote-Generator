@@ -1,5 +1,7 @@
+const token = localStorage.getItem('token');
+const userId = localStorage.getItem('user');
 const queryParams = new URLSearchParams({
-  jwt: 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMTY0MjUzMjEyNTYzMTA5OTAwMzAiLCJlbWFpbCI6ImpvaGFubmVzYkBiYmQuY28uemEiLCJuYW1lIjoiSm9oYW5uZXMgQmFybmFyZCIsImlhdCI6MTY5MDQ3NzIzMCwiZXhwIjoxNjkwNDgwODMwfQ.lKXNAuaIQMY8atXE5x7GNcSAxmPeFbesdHNaUKtbW3M',
+  jwt: token,
 });
 
 quoteOfTheDay = {
@@ -46,7 +48,6 @@ function httpGet(url) {
 function getQuote(quote) {
   httpGet(quote.url)
     .then(function (response) {
-      console.log(response);
       document.getElementById(quote.text).textContent = response.quoteText;
       document.getElementById(quote.seasonEp).textContent =
         'Season: ' + response.quoteSeason + ' Episode: ' + response.quoteEp;
@@ -69,6 +70,57 @@ function getCharacter(id, author) {
     .catch(function (error) {
       console.error('Error:', error);
     });
+}
+
+function favoriteQuoteOfTheDay() {
+  const data = { UserID: userId, QuoteID: quoteOfTheDay.QuoteID };
+  const url =
+    'http://tteapi-4-env.eba-7w3sxei8.af-south-1.elasticbeanstalk.com/api/favourites';
+  fetch(url + '?' + queryParams, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  }).then((response) => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+  });
+}
+
+function favoriteQuoteOfTheWeek() {
+  const data = { UserID: userId, QuoteID: quoteOfTheWeek.QuoteID };
+  const url =
+    'http://tteapi-4-env.eba-7w3sxei8.af-south-1.elasticbeanstalk.com/api/favourites';
+  fetch(url + '?' + queryParams, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  }).then((response) => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+  });
+}
+
+function favoriteQuoteOfTheMonth() {
+  const data = { UserID: userId, QuoteID: quoteOfTheMonth.QuoteID };
+  const url =
+    'http://tteapi-4-env.eba-7w3sxei8.af-south-1.elasticbeanstalk.com/api/favourites';
+  fetch(url + '?' + queryParams, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  }).then((response) => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+  });
 }
 
 // window.addEventListener('load', async () => {
