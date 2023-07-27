@@ -1,0 +1,19 @@
+@import url(./header.css);
+@import url(./main.css);
+
+img {
+  top: 0;
+}
+
+main {
+  position: relative;
+  background-color: unset;
+  height: unset;
+  max-height: unset;
+  min-height: unset;
+  row-gap: 0.5rem;
+  padding-bottom: 1rem;
+  max-width: 100%;
+  top: 175px;
+  border: none;
+}

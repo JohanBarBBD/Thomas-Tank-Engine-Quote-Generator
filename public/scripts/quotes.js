@@ -1,3 +1,7 @@
+const queryParams = new URLSearchParams({
+  jwt: 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMDcwODI5NzA2MTQ2ODQ1NjYwMzMiLCJlbWFpbCI6Im1hdHRoZXcuZGFjcmUxQGdtYWlsLmNvbSIsIm5hbWUiOiJNYXR0aGV3IERhY3JlIiwiaWF0IjoxNjkwNDcwNjA2LCJleHAiOjE2OTA0NzQyMDZ9.Kn-4oSsp-NBhMLg2TDU51cSLnJg33k7UhsRc1TmGIxo',
+});
+
 quoteOfTheDay = {
   url: 'http://tteapi-4-env.eba-7w3sxei8.af-south-1.elasticbeanstalk.com/api/quotes/quote-of-the-day',
   text: 'quoteOfTheDayText',
@@ -27,7 +31,7 @@ getQuote(quoteOfTheWeek);
 getQuote(quoteOfTheMonth);
 
 function httpGet(url) {
-  return fetch(url)
+  return fetch(url + '?' + queryParams)
     .then(function (response) {
       if (!response.ok) {
         throw new Error('Request failed with status: ' + response.status);
@@ -42,6 +46,7 @@ function httpGet(url) {
 function getQuote(quote) {
   httpGet(quote.url)
     .then(function (response) {
+      console.log(response);
       document.getElementById(quote.text).textContent = response.quoteText;
       document.getElementById(quote.seasonEp).textContent =
         'Season: ' + response.quoteSeason + ' Episode: ' + response.quoteEp;
@@ -59,7 +64,6 @@ function getCharacter(id, author) {
     id;
   httpGet(url)
     .then(function (response) {
-      console.log(response);
       document.getElementById(author).textContent = 'Author: ' + response.name;
     })
     .catch(function (error) {
