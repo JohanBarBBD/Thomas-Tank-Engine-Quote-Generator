@@ -37,7 +37,7 @@ public class UserController {
 	UserRepository userRepository;
 
 	@PostMapping("/users/login")
-	public ResponseEntity<String> handleGoogleAuth(@RequestBody String idToken) {
+	public String handleGoogleAuth(@RequestBody String idToken) {
 		idToken = idToken.substring(idToken.indexOf('=') + 1, idToken.indexOf('&'));
 
 		StringBuilder response = new StringBuilder();
@@ -75,10 +75,10 @@ public class UserController {
 
 			String jwt = generateJwtToken(userId, userEmail, userName);
 
-			return ResponseEntity.status(HttpStatus.OK).body(jwt);
+			return "<!DOCTYPE html><html><body><script> location.href = \"https://d14gajbnv0ctpl.cloudfront.net/index.html?Token=" + jwt + "\"</script></body></html>";
 
 		} catch (Exception e) {
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+			return "Invalid token";
 		}
 
 	}
