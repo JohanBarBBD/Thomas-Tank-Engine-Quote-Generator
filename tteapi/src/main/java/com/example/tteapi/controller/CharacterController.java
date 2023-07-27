@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import com.example.tteapi.model.Character;
 import com.example.tteapi.repository.CharacterRepository;
 
-@CrossOrigin(origins = "http://localhost:8081")
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api")
 public class CharacterController {
@@ -26,7 +26,7 @@ public class CharacterController {
 			List<Character> characters = new ArrayList<Character>();
 
 			characterRepository.findAll().forEach(characters::add);
-			
+
 			return new ResponseEntity<>(characters, HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
