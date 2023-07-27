@@ -55,7 +55,7 @@ async function getFavorites() {
   for (let i = 0; i < quoteDetails.length; i++) {
     
     let listItem = document.createElement('li');
-    listItem.innerText = `${quotequoteDetails[i].quoteText}`;
+    listItem.innerText = `${quoteDetails[i].quoteText}`;
     list.appendChild(listItem);
 
     }
