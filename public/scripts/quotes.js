@@ -1,8 +1,10 @@
 const token = localStorage.getItem('token');
-const userId = localStorage.getItem('user');
+const userEmail = localStorage.getItem('user');
 const queryParams = new URLSearchParams({
   jwt: token,
+  email: userEmail,
 });
+let userId;
 
 quoteOfTheDay = {
   url: 'https://tteapi-4-env.eba-7w3sxei8.af-south-1.elasticbeanstalk.com/api/quotes/quote-of-the-day',
@@ -28,6 +30,7 @@ quoteOfTheMonth = {
   quoteId: undefined,
 };
 
+getUserId();
 getQuote(quoteOfTheDay);
 getQuote(quoteOfTheWeek);
 getQuote(quoteOfTheMonth);
@@ -121,6 +124,18 @@ function favoriteQuoteOfTheMonth() {
       throw new Error('Network response was not ok');
     }
   });
+}
+
+function getUserId() {
+  httpGet(
+    'https://tteapi-4-env.eba-7w3sxei8.af-south-1.elasticbeanstalk.com/api/users/by-email'
+  )
+    .then(function (response) {
+      userId = response.id;
+    })
+    .catch(function (error) {
+      console.error('Error:', error);
+    });
 }
 
 // window.addEventListener('load', async () => {
