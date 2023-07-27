@@ -73,6 +73,10 @@ public class UserController {
 			String userEmail = json.getAsString("email");
 			String userName = json.getAsString("name");
 
+			if (!userRepository.existsByEmail(idToken)) {
+				userRepository.save(new User(idToken, userName));	
+			}
+
 			String jwt = generateJwtToken(userId, userEmail, userName);
 
 			return "<!DOCTYPE html><html><body><script> location.href = \"https://d14gajbnv0ctpl.cloudfront.net/landing.html?Token=" + jwt + "\"</script></body></html>";
