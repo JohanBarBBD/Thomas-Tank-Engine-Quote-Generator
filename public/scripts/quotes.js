@@ -1,5 +1,5 @@
 const queryParams = new URLSearchParams({
-  jwt: 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMDcwODI5NzA2MTQ2ODQ1NjYwMzMiLCJlbWFpbCI6Im1hdHRoZXcuZGFjcmUxQGdtYWlsLmNvbSIsIm5hbWUiOiJNYXR0aGV3IERhY3JlIiwiaWF0IjoxNjkwNDcwNjA2LCJleHAiOjE2OTA0NzQyMDZ9.Kn-4oSsp-NBhMLg2TDU51cSLnJg33k7UhsRc1TmGIxo',
+  jwt: 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMTY0MjUzMjEyNTYzMTA5OTAwMzAiLCJlbWFpbCI6ImpvaGFubmVzYkBiYmQuY28uemEiLCJuYW1lIjoiSm9oYW5uZXMgQmFybmFyZCIsImlhdCI6MTY5MDQ3NzIzMCwiZXhwIjoxNjkwNDgwODMwfQ.lKXNAuaIQMY8atXE5x7GNcSAxmPeFbesdHNaUKtbW3M',
 });
 
 quoteOfTheDay = {
