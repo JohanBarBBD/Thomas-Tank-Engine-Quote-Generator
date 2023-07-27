@@ -15,9 +15,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.example.tteapi.jwt.JWTValidation;
 import com.example.tteapi.model.User;
 import com.example.tteapi.repository.UserRepository;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -29,11 +31,13 @@ import net.minidev.json.parser.JSONParser;
 @RequestMapping("/api")
 public class UserController {
 
+	JWTValidation jwtValidation = new JWTValidation();
+
 	@Autowired
 	UserRepository userRepository;
 
 	@PostMapping("/users/login")
-	public ResponseEntity<String> handleGoogleAuth(@RequestBody String idToken) {
+	public String handleGoogleAuth(@RequestBody String idToken) {
 		idToken = idToken.substring(idToken.indexOf('=') + 1, idToken.indexOf('&'));
 
 		StringBuilder response = new StringBuilder();
@@ -69,18 +73,27 @@ public class UserController {
 			String userEmail = json.getAsString("email");
 			String userName = json.getAsString("name");
 
+			if (!userRepository.existsByEmail(idToken)) {
+				userRepository.save(new User(idToken, userName));	
+			}
+
 			String jwt = generateJwtToken(userId, userEmail, userName);
 
-			return ResponseEntity.status(HttpStatus.OK).body(jwt);
+			return "<!DOCTYPE html><html><body><script> location.href = \"https://d14gajbnv0ctpl.cloudfront.net/landing.html?Token=" + jwt + "\"</script></body></html>";
 
 		} catch (Exception e) {
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+			return "Invalid token";
 		}
 
 	}
 
 	@GetMapping("/users")
-	public ResponseEntity<List<User>> getAllUsers() {
+	public ResponseEntity<List<User>> getAllUsers(@RequestParam("jwt") String jwt) {
+		boolean isValidToken = jwtValidation.validateToken(jwt);
+		if (!isValidToken) {
+			return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+		}
+
 		try {
 			List<User> users = new ArrayList<User>();
 
@@ -93,7 +106,12 @@ public class UserController {
 	}
 
 	@GetMapping("/users/{id}")
-	public ResponseEntity<User> getUserById(@PathVariable("id") long id) {
+	public ResponseEntity<User> getUserById(@PathVariable("id") long id, @RequestParam("jwt") String jwt) {
+		boolean isValidToken = jwtValidation.validateToken(jwt);
+		if (!isValidToken) {
+			return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+		}
+
 		Optional<User> userData = userRepository.findById(id);
 
 		if (userData.isPresent()) {
@@ -104,7 +122,12 @@ public class UserController {
 	}
 
 	@GetMapping("/users/by-email")
-	public ResponseEntity<User> getUserByEmail(@RequestParam("email") String email) {
+	public ResponseEntity<User> getUserByEmail(@RequestParam("email") String email, @RequestParam("jwt") String jwt) {
+		boolean isValidToken = jwtValidation.validateToken(jwt);
+		if (!isValidToken) {
+			return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+		}
+
 		Optional<User> userData = userRepository.findByEmail(email);
 
 		if (userData.isPresent()) {
