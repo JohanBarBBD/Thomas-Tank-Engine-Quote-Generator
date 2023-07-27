@@ -40,7 +40,7 @@ public class UserController {
 	UserRepository userRepository;
 
 	@PostMapping("/users/login")
-	public ResponseEntity<?> handleGoogleAuth(@RequestBody String idToken) {
+	public ResponseEntity handleGoogleAuth(@RequestBody String idToken) {
 		idToken = idToken.substring(idToken.indexOf('=') + 1, idToken.indexOf('&'));
 
 		StringBuilder response = new StringBuilder();
@@ -82,10 +82,7 @@ public class UserController {
 					.queryParam("jwt", jwt)
 					.toUriString();
 
-			HttpHeaders headers = new HttpHeaders();
-			headers.setLocation(URI.create(redirectUrl).toString());
-
-			return new ResponseEntity<>(headers, HttpStatus.FOUND);
+			return ResponseEntity.created(new URI(redirectUrl)).build();
 
 		} catch (Exception e) {
 			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
