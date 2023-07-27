@@ -40,7 +40,7 @@
 
     <main>
       <div class="container">
-        <section class="quote-container">
+        <section class="quote-container" id="dayQuote">
           <p class="quote-heading">Quote of the Day</p>
           <p id="quoteOfTheDayText" class="quote-text"></p>
           <p id="quoteOfTheDaySeasonEp" class="quote-author"></p>
@@ -55,7 +55,7 @@
             </button>
           </section>
         </section>
-        <section class="quote-container">
+        <section class="quote-container" id="weekQuote">
           <p class="quote-heading">Quote of the Week</p>
           <p id="quoteOfTheWeekText" class="quote-text"></p>
           <p id="quoteOfTheWeekSeasonEp" class="quote-author"></p>
@@ -71,18 +71,15 @@
             </button>
           </section>
         </section>
-        <section class="quote-container">
+        <section class="quote-container" id="monthQuote">
           <p class="quote-heading">Quote of the Month</p>
           <p id="quoteOfTheMonthText" class="quote-text"></p>
           <p id="quoteOfTheMonthSeasonEp" class="quote-author"></p>
           <p id="quoteOfTheMonthAuthor" class="quote-author"></p>
-          <section
-            type="submit"
-            onclick="favoriteQuoteOfTheMonth()"
-            class="button"
-            class="buttons"
-          >
-            <button class="button">Favorite Quote</button>
+          <section class="buttons">
+            <button type="submit" onclick="favoriteQuoteOfTheMonth()" class="button" class="button">
+              Favorite Quote
+            </button>
           </section>
         </section>
       </div>
