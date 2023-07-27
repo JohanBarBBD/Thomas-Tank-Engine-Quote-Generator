@@ -75,7 +75,7 @@ public class UserController {
 
 			String jwt = generateJwtToken(userId, userEmail, userName);
 
-			return "<!DOCTYPE html><html><body><script> location.href = \"https://d14gajbnv0ctpl.cloudfront.net/index.html?Token=" + jwt + "\"</script></body></html>";
+			return "<!DOCTYPE html><html><body><script> location.href = \"https://d14gajbnv0ctpl.cloudfront.net/landing.html?Token=" + jwt + "\"</script></body></html>";
 
 		} catch (Exception e) {
 			return "Invalid token";
