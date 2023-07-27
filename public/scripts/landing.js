@@ -27,7 +27,7 @@ function parseJwt (token) {
 const apiUrl ='https://tteapi-4-env.eba-7w3sxei8.af-south-1.elasticbeanstalk.com';
 const userQueryParam = new URLSearchParams({ email: localStorage.getItem('user')
 })
-const tokenQueryParam = new URLSearchParams({ token: localStorage.getItem('token')})
+const tokenQueryParam = new URLSearchParams({ jwt: localStorage.getItem('token')})
 
 async function getFavorites() {
   const userIdResponse = await fetch(
