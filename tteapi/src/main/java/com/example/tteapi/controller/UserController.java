@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import com.example.tteapi.model.User;
 import com.example.tteapi.repository.UserRepository;
 
-@CrossOrigin(origins = "http://localhost:8081")
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api")
 public class UserController {
@@ -26,7 +26,7 @@ public class UserController {
 			List<User> users = new ArrayList<User>();
 
 			userRepository.findAll().forEach(users::add);
-			
+
 			return new ResponseEntity<>(users, HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
