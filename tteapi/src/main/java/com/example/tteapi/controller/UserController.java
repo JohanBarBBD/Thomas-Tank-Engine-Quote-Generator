@@ -3,6 +3,7 @@ package com.example.tteapi.controller;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.security.Key;
 import java.util.ArrayList;
@@ -14,10 +15,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.example.tteapi.jwt.JWTValidation;
 import com.example.tteapi.model.User;
 import com.example.tteapi.repository.UserRepository;
+import com.google.api.client.http.HttpHeaders;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -37,7 +40,7 @@ public class UserController {
 	UserRepository userRepository;
 
 	@PostMapping("/users/login")
-	public ResponseEntity<String> handleGoogleAuth(@RequestBody String idToken) {
+	public ResponseEntity<?> handleGoogleAuth(@RequestBody String idToken) {
 		idToken = idToken.substring(idToken.indexOf('=') + 1, idToken.indexOf('&'));
 
 		StringBuilder response = new StringBuilder();
@@ -75,7 +78,14 @@ public class UserController {
 
 			String jwt = generateJwtToken(userId, userEmail, userName);
 
-			return ResponseEntity.status(HttpStatus.OK).body(jwt);
+			String redirectUrl = UriComponentsBuilder.fromPath("/landing.html")
+					.queryParam("jwt", jwt)
+					.toUriString();
+
+			HttpHeaders headers = new HttpHeaders();
+			headers.setLocation(URI.create(redirectUrl).toString());
+
+			return new ResponseEntity<>(headers, HttpStatus.FOUND);
 
 		} catch (Exception e) {
 			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
