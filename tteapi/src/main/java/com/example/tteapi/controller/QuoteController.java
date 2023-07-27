@@ -85,6 +85,27 @@ public class QuoteController {
 		}
 	}
 
+	@GetMapping("/quotes/list/")
+	public ResponseEntity<List<Quote>> getQuotesByIdList(@RequestParam("value") Long[] ids,
+			@RequestParam("jwt") String jwt) {
+		boolean isValidToken = jwtValidation.validateToken(jwt);
+		if (!isValidToken) {
+			return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+		}
+
+		List<Quote> response = new ArrayList<Quote>();
+
+		for (Long i : ids) {
+			Optional<Quote> quoteData = quoteRepository.findById(i);
+			if (quoteData.isPresent()) {
+				response.add(quoteData.get());
+			}
+		}
+
+		return new ResponseEntity<List<Quote>>(response, HttpStatus.OK);
+
+	}
+
 	@GetMapping("/quotes/quote-of-the-day")
 	public ResponseEntity<Quote> getQuoteOfTheDay(@RequestParam("jwt") String jwt) {
 		boolean isValidToken = jwtValidation.validateToken(jwt);
@@ -168,7 +189,7 @@ public class QuoteController {
 		if (!isValidToken) {
 			return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
 		}
-		
+
 		try {
 			LocalDate currentDate = LocalDate.now();
 			LocalDate firstDayOfMonth = currentDate.withDayOfMonth(1);
