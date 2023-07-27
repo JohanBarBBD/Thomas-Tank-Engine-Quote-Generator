@@ -1,0 +1,79 @@
+@import url(./header.css);
+@import url(./main.css);
+
+img {
+  width: 600px;
+  height: auto;
+  border: 10px ridge black;
+}
+
+main {
+  position: relative;
+  background-color: unset;
+  height: unset;
+  max-height: unset;
+  min-height: unset;
+  row-gap: 0.5rem;
+  padding-bottom: 1rem;
+  max-width: 100%;
+  border: none;
+}
+
+footer {
+  background-color: var(--main-bg-color);
+  padding-bottom: 20px;
+  text-align: center;
+  position: fixed;
+  bottom: 0;
+  width: 100vw;
+  height: 30px;
+  font-size: 18px;
+  text-shadow: rgb(0, 0, 0) 1px 0 10px;
+  color: white;
+  font-family: var(--font-family);
+}
+
+.buttons {
+  padding-top: 10px;
+  text-align: center;
+}
+
+.button {
+  font-size: 1rem;
+  padding: 10px 20px;
+  border: none;
+  background-color: #007bff8f;
+  color: #ffffff;
+  cursor: pointer;
+  transition: font-size 0.3s ease;
+  width: 12rem;
+  text-decoration: none;
+  border-radius: 0.5rem;
+  border: solid 2px black;
+  display: inline-block;
+  text-align: center;
+  line-height: 1.2rem;
+  font-family: var(--font-family);
+  width: 600px;
+}
+
+.button:hover {
+  font-size: 1.1rem;
+  background-color: #000000a3;
+}
+
+@media (max-width: 600px) {
+  .container {
+    width: 90%;
+    flex-direction: column;
+  }
+
+  .button {
+    width: 350px;
+  }
+
+  img {
+    width: 350px;
+    height: auto;
+  }
+}
