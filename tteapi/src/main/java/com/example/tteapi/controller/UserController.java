@@ -1,9 +1,11 @@
 package com.example.tteapi.controller;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.security.Key;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -15,15 +17,12 @@ import org.springframework.web.bind.annotation.*;
 
 import com.example.tteapi.model.User;
 import com.example.tteapi.repository.UserRepository;
-import com.google.api.client.auth.openidconnect.IdToken.Payload;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.jackson2.JacksonFactory;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import net.minidev.json.JSONObject;
+import net.minidev.json.parser.JSONParser;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -35,30 +34,50 @@ public class UserController {
 
 	@PostMapping("/users/login")
 	public ResponseEntity<String> handleGoogleAuth(@RequestBody String idToken) {
-        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), JacksonFactory.getDefaultInstance())
-		.setAudience(Collections.singletonList(System.getenv("CLIENT_ID")))
-		.build();
+		idToken = idToken.substring(idToken.indexOf('=') + 1, idToken.indexOf('&'));
 
-        GoogleIdToken idTokenObject = null;
-        try {
-            idTokenObject = verifier.verify(idToken);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
-        }
+		StringBuilder response = new StringBuilder();
 
-        if (idTokenObject != null) {
-			Payload payload = idTokenObject.getPayload();
+		URL url;
+		try {
+			url = new URL("https://oauth2.googleapis.com/tokeninfo?id_token=" + idToken);
 
-			String userId = payload.getSubject();
-			String email = (String) payload.get("email");
-			String name = (String) payload.get("name");
+			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-            String jwtToken = generateJwtToken(userId, email, name);
-            return ResponseEntity.ok(jwtToken);
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
-        }
-    }
+			connection.setRequestMethod("GET");
+			connection.setRequestProperty("User-Agent", "Mozilla/5.0");
+
+			int responseCode = connection.getResponseCode();
+			if (responseCode == HttpURLConnection.HTTP_OK) {
+				BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+				String inputLine;
+
+				while ((inputLine = in.readLine()) != null) {
+					response.append(inputLine);
+				}
+				in.close();
+			} else {
+				response.append("GET request not successful. Response code: ").append(responseCode);
+			}
+
+			connection.disconnect();
+
+			JSONParser parser = new JSONParser();
+			JSONObject json = (JSONObject) parser.parse(response.toString());
+
+			String userId = json.getAsString("sub");
+			String userEmail = json.getAsString("email");
+			String userName = json.getAsString("name");
+
+			String jwt = generateJwtToken(userId, userEmail, userName);
+
+			return ResponseEntity.status(HttpStatus.OK).body(jwt);
+
+		} catch (Exception e) {
+			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
 
 	@GetMapping("/users")
 	public ResponseEntity<List<User>> getAllUsers() {
@@ -117,19 +136,19 @@ public class UserController {
 	}
 
 	public static String generateJwtToken(String userId, String userEmail, String userName) {
-		
-		Key key = Keys.hmacShaKeyFor(System.getenv("JWT_SECRET").getBytes());
-		
-        Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + 3600000);
 
-        return Jwts.builder()
-                .setSubject(userId)
-                .claim("email", userEmail)
-                .claim("name", userName)
-                .setIssuedAt(now)
-                .setExpiration(expiryDate)
-                .signWith(key, SignatureAlgorithm.HS256)
-                .compact();
-    }
+		Key key = Keys.hmacShaKeyFor(System.getenv("JWT_SECRET").getBytes());
+
+		Date now = new Date();
+		Date expiryDate = new Date(now.getTime() + 3600000);
+
+		return Jwts.builder()
+				.setSubject(userId)
+				.claim("email", userEmail)
+				.claim("name", userName)
+				.setIssuedAt(now)
+				.setExpiration(expiryDate)
+				.signWith(key, SignatureAlgorithm.HS256)
+				.compact();
+	}
 }
