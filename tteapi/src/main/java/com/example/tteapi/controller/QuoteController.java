@@ -26,7 +26,7 @@ import com.example.tteapi.repository.CharacterRepository;
 import com.example.tteapi.repository.FavouriteRepository;
 import com.example.tteapi.repository.QuoteRepository;
 
-@CrossOrigin(origins = "http://localhost:8081")
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api")
 public class QuoteController {
